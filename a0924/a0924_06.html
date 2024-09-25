@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    //함수정의
+    function a_input(){
+      console.log(1);
+      console.log(2);
+      b_input();  //함수호출
+    }
+    //함수정의
+    function b_input(){
+      document.write("안녕하세요.");
+    }
+    //함수선언    매계변수
+    function calc(a,b,c){
+
+      return Number(Txt1+Txt2+Txt3)
+    }
+      var Txt1 = Number("#txt1")
+      var Txt2 = Number("#txt2")
+      var Txt3 = Number("#txt3")
+    //함수선언
+    function send_txt(){
+      //퀴즈 txt1,txt2,txt3
+
+      var data = calc(Txt1,Txt2,Txt3);
+      document.querySelector("#c1").innerText = data;
+    }
+  </script>
+  <button onclick="a_input()">함수호출</button>
+  <br>
+  <div id="c1">0</div>
+  <input type="text" id="txt1">
+  <input type="text" id="txt2">
+  <input type="text" id="txt3">
+  <button onclick="send_txt()">확인</button>
+  
+</body>
+</html>

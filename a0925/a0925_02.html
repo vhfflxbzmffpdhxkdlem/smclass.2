@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <title>Document</title>
+  <script>
+    //제이쿼리 구문
+  $(function(){
+    //슬라이드 닫침
+    $(".brn2").click(function(){
+      //$(".box").stop()
+      //$(".box").slideUp(1000,"linear",function(){
+        $(".box").fadeOut(1000,"swing",function(){
+          
+        }
+      )
+    })
+    //슬라이드 열림
+    $(".btn1").click(function(){
+      //$(".box").stop()
+      //$(".box").slideDown(1000,"linear",function(){
+        
+    })
+    
+    $(".btn3").on("click",function(){
+      $(".box").fadeIn(500,"swing",function(){
+        
+      })
+    })
+    //toggle효과
+    $(".btn4").on("click",function(){
+      $(".box").toggle(1000,"linear",function(){
+        $(".box").stop()
+      })
+      
+      
+      
+      
+    })//제이쿼리 구문
+  })//제이쿼리 구문
+  </script>
+  <style>
+    .content{width: 400px; border: 1px solid black;}
+  </style>
+</head>
+<body>
+  <button class="btn1">슬라이드열림</button>
+  <button class="brn2">슬라이드닫침</button>
+  <button class="brn3">페이드 in</button>
+  <button class="brn4">toggle</button>
+  <div class="box">
+    <div class="content">
+      (세종=연합뉴스) 김수현 기자 = 의대들의 계속된 수업 거부에 출석 미달 유급을 없애고 시험에 응시하면 유급시키지 않겠다는 의대까지 등장했다
+    </div>
+  </div>
+
+
+
+</body>
+</html>
