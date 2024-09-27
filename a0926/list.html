@@ -4,15 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="js/p_script.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css" integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link rel="stylesheet" type="text/css" href="css/board.css">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <script src="js/p_script.js"></script>
   <title>포레스트 리솜</title>
-<style>
-  img{width: 100px;}
-</style>
+  <style>img{width:100px}</style>
+  
 </head>
 <body>
   <header>
@@ -30,6 +29,7 @@
             <li><a href="#">로그인</a></li>
           </ul>
         </div>
+        
         <div class="menu" >
           <ul>
             <li><a href="#">포레스트</a></li>
@@ -46,7 +46,8 @@
   <!-- * 하부메뉴부분 들어감 -->
   <div class="navibg"></div>
   <!-- 서브페이지 배너 부분 -->
-  <div class="sub_banner"></div>
+  <div class="sub_banner"></div> 
+
   <!--section 부분 : 게시판 -->
   <section>
     <div class="sub_naviloc">HOME <i class="fa-solid fa-chevron-right"></i> 포레스트 <i class="fa-solid fa-chevron-right"></i> NOTICE</div>
@@ -59,7 +60,7 @@
           <option value="bcontent">내용</option>
           <option value="name">작성자</option>
         </select>
-        <input type="searchtext" name="search_txt" id="search_txt">
+        <input type="text" name="search_txt" id="search_txt">
         <button type="button" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>
@@ -95,6 +96,7 @@
         data += "<td>2024-09-10</td>";
         data += "<td><button class='delBtn'>삭제<button></td>";
         data += "</tr>";
+
       }
       document.getElementById("tbody").innerHTML = data;
     </script>
@@ -111,7 +113,9 @@
       <li class="last"></li>
     </ul>
     <div class="write"><a href="#">쓰기</a></div>
+    
   </section>
+
   <div id="right_fixed">
     <div class="chatting">
       <div></div>
@@ -124,5 +128,8 @@
     <div class="items" >최근 본 상품(0) <span></span></div>
     <div class="top">▲ TOP</div>
   </div>
+
+
+  
 </body>
 </html>
