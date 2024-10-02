@@ -1,5 +1,5 @@
 #변수 선언 
-#boolVar : 논리형, intVar : 정수형, floatVar : 실수형, strVar : 문자형
+#boolVar : 논리형, intVar : 정수형, floatVar : 실수형, strVar : 문자형(문자열)
 
 #input으로 입력을 받아
 # 홍길동, 100 100 99, 합계, 평균은 소수정 둘째 자리 1줄에 출력하시오.
