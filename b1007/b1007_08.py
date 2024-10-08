@@ -1,5 +1,6 @@
-import
+import random
 lotto = [1]*3+[0]*6
+random.shuffle(lotto)
 a_list = [
   [1,0,0],
   [0,1,0],
@@ -22,9 +23,11 @@ while True:
   for i in range(3):
     print(i,end="\t")
     for j in range(3):
-      print(aa_list)
+      print(aa_list[i][j],end="\t")
       num = input("원하시는 곳을 선택해주세요(0.0)")
       num2 = num.split(".")
       if a_list[int(num2[0])][int(num2[1])] == 1:
         aa_list[int(num2[0])][int(num2[1])] == "당첨"
         print(f"{[int(num2[0])][int(num2[1])]}당첨금 : ",)
+      elif a_list[int(num2[0])][int(num2[1])] == 0:
+        aa_list[int(num2[0])][int(num2[1])] == "꽝"
