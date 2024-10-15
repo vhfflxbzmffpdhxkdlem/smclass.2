@@ -8,7 +8,7 @@ students = [
 ]
 s_title = ['번호','이름','국어','영어','수학','합계','평균','등수'] #전역변수
 stuNo = len(students)
-
+no=0;name="";kor=0;eng=0;math=0;total=0;avg=0;rank=0
 # 함수호출
 def stu_input(stuNo,students):
   while True:
@@ -37,9 +37,11 @@ def stu_input(stuNo,students):
 # -----------------------------
 
 # 함수호출
-def stu_page():
-  for s in students:
-    pass
+# def stu_page():
+#   for s in students:
+#     print(f"{no},{name},{kor},{eng},{math},{total},{avg},{rank}",end = "\t")
+#   print()
+
 stu_input(stuNo,students)
 print(students)
 
