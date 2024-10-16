@@ -1,14 +1,41 @@
 # students 리스트 타입
-students = [
-  {"no":1,"name":"홍길동","kor":100,"eng":100,"math":99,"total":299,"avg":99.67,"rank":0},
-  {"no":2,"name":"유관순","kor":80,"eng":80,"math":85,"total":245,"avg":81.67,"rank":0},
-  {"no":3,"name":"이순신","kor":90,"eng":90,"math":91,"total":271,"avg":90.33,"rank":0},
-  {"no":4,"name":"강감찬","kor":60,"eng":65,"math":67,"total":192,"avg":64.00,"rank":0},
-  {"no":5,"name":"김구","kor":100,"eng":100,"math":84,"total":284,"avg":94.67,"rank":0},
-]
-s_title = ['번호','이름','국어','영어','수학','합계','평균','등수'] #전역변수
-choice = 0 # 전역변수
+# students = [
+#   {"no":1,"name":"홍길동","kor":100,"eng":100,"math":99,"total":299,"avg":99.67,"rank":0},
+#   {"no":2,"name":"유관순","kor":80,"eng":80,"math":85,"total":245,"avg":81.67,"rank":0},
+#   {"no":3,"name":"이순신","kor":90,"eng":90,"math":91,"total":271,"avg":90.33,"rank":0},
+#   {"no":4,"name":"강감찬","kor":60,"eng":65,"math":67,"total":192,"avg":64.00,"rank":0},
+#   {"no":5,"name":"김구","kor":100,"eng":100,"math":84,"total":284,"avg":94.67,"rank":0},
+# ]
+students = []
+stu_keys = ["no","name","kor","eng","math","total","avg","rank"]
+
+f = open('students.txt','r',encoding='utf-8')
+while True:
+  line = f.readline()
+  if not line:break
+  s = line.strip().split(",")
+  s[0] = int(s[0])
+  s[2] = int(s[2])
+  s[3] = int(s[3])
+  s[4] = int(s[4])
+  s[5] = int(s[5])
+  s[6] = float(s[6])
+  s[7] = int(s[0])
+students.append(dict(zip(stu_keys,s)))
+for i in range(7):
+  if i == 1: continue
+  elif i == 6: s[6] = float(s[6])
+  else:s[i] = int(s[i])
+students.append(dict(zip(stu_keys,s)))
+print(line.strip())
+f.close
+#-----------------------
+
+# 5명 - 1,4,5 -> 4+1
+
 stuNo = len(students)  # 리스트에 학생이 있으면, 그 인원으로 변경
+choice = 0 # 전역변수
+s_title = ['번호','이름','국어','영어','수학','합계','평균','등수'] #전역변수
 chk = 0    # 체크변수
 count = 1  # 성적처리
 no=0;name="";kor=0;eng=0;math=0;total=0;avg=0;rank=0 #성적처리변수
@@ -50,6 +77,13 @@ def stu_input():
              "math":math,"total":total,"avg":avg,"rank":rank }
       students.append(ss)
       stuNo += 1  # 학생수 1증가
+
+      # students.txt 파일쓰기
+      f = open('students.txt','w',encoding='utf-8')
+      data = f"{s['no']},{s['name']},{s['kor']},{s['eng']},{s['math']},{s['total']},{s['avg']},{s['rank']}\n"
+      f.write(data)
+      f.close()
+      #-----------------------
       print(f"{name} 학생성적이 저장되었습니다.!")
       print()
   return stuNo
