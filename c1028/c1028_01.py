@@ -24,7 +24,7 @@ rows = cursor.fetchall()
 #   print(row)
 
 for i in range(len(rows)):
-  print(f"{i+1}\t{rows[i][0]:10}\t{rows[i][1]}\t{rows[i][2]:8}\t{rows[i][3]:33}\t{rows[i][4]}\t{rows[i][5]}\t{rows[i][6]}\t{rows[i][7]}")
+  print(f"{i+1}\t{rows[i][0]:10}\t{rows[i][1]}\t{rows[i][2]:8}\t{rows[i][3]:32}\t{rows[i][4]}\t{rows[i][5]}\t{rows[i][6]}\t{rows[i][7]}")
 
 
 conn.close()
