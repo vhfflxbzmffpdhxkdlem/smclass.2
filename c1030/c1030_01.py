@@ -87,9 +87,9 @@ while True:
       smtpName = "smtp.naver.com"
       smtpPort = 587
 
-      sendEmail: "wonwow55@naver.com"
-      pw = "j951852753"
-      recvEmail = "wonwow55@naver.com"
+      sendEmail: "aaa@naver.com"
+      pw = "1111"
+      recvEmail = "aaa@naver.com"
 
       title = "제목 : 오라클 임시비밀번호 발송"
       content = ran_num
