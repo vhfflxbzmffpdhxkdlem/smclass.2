@@ -650,34 +650,71 @@ select * from salgrade;
 select emp_name,salary,grade from employees,salgrade
 where salary between losal and hisal; --107*5=535
 
+-- non-equi join 활용해서 students total A,B,C,D,F 등급을 출력하시오.
+-- 100~90 A , 89~80 B , 79~70 C , 69~60 D , 59 F
+-- 테이블 명 : stu_grade grade,lototal, hitotal
+-- name,avg,grade
 
+select name,avg,grade from students,stu_grade
+where avg between lototal and hitotal;
 
+-- drop table stu_grade;
 
+create table stu_grade(
+grade varchar2(10),
+lototal number(6,3),
+hitotal number(6,3)
+);
 
+insert into stu_grade values(
+'A등급',90,100
+);
+insert into stu_grade values(
+'B등급',80,89.99
+);
+insert into stu_grade values(
+'C등급',70,79.99
+);
+insert into stu_grade values(
+'D등급',60,69.99
+);
+insert into stu_grade values(
+'F등급',0,59.99
+);
 
+select * from stu_grade;
 
+commit;
 
+select * from stu;
 
+update stu set result ='';
+commit;
 
+--result 결과값을 non-equi join을 사용해서 입력하시오.
 
+update stu a set result =(select results from
+(select no,grade as results from stu,stu_grade
+where avg between lototal and hitotal) b 
+where a.no=b.no);
 
+select name,avg,grade from stu,stu_grade
+where avg between lototal and hitotal;
 
+-- self join
+select employee_id,emp_name,manager_id from employees;
 
+select employee_id,emp_name from employees where employee_id = 124;
 
+-- self join : 자신의 테이블 2개를 join 결과값을 출력
+select a.employee_id,a.emp_name,a.manager_id,b.emp_name 
+from employees a,employees b
+where a.manager_id=b.employee_id and a.manager_id=124;
 
+desc students;
+select * from students;
 
-
-
-
-
-
-
-
-
-
-
-
-
+select students_seq.nextval from dual;
 
 
 
