@@ -1,0 +1,59 @@
+[model ORM 명령어 ]
+
+**입력
+qs = Student(s_name='강감찬',s_major='국사학과',s_grade=3,s_age=22,s_gender='M')
+qs.save()
+
+-- create : qs.save() 저장이 됨  (qs.save() 사용안해도 저장됨)
+Student.objects.create(s_name='강감찬',s_major='국사학과',s_grade=3,s_age=22,s_gender='M')
+
+검색 - select
+-- 전체검색
+qs = Student.objects.all()
+qs[0]
+qs[1]
+-- 부분검색
+qs = Student.objects.get(s_name='홍길동')
+Student 객체   (1개를 가져옴.), 
+qs.s_name
+
+qs = Student.objects.filter(s_name='홍길동')
+QuerySet 1개가 넘어와서 리스트형태   (여러개를 가져옴), 
+qs[0].s_name
+
+-- 비교검색
+__lt(보다 작다)
+__lte(보다 작거나 같다)
+__gt(보다 크다)
+__gte(보다 크거나 같다)
+__isnull(null인 자료검색)
+__contains(특정 문자열 포함)
+__startwith(특정 문자열로 시작)
+__endwith(특정 문자열로 끝남)
+qs = Student.objects.filter(s_age__lt)
+
+** 수정 - update
+- 해당데이터 검색후, 컬럼에 값을 입력하면 수정됨.
+qs = Student.objects.get(s_name='홍길동')
+qs.s_age = 22
+qs.save()
+
+** 삭제 - delete
+qs = Student.objects.get(s_name='홍길동')
+qs.delete()
+
+Student.objects.get(s_name='홍길동').delete()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

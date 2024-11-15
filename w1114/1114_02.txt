@@ -1,0 +1,31 @@
+프로젝트를 생성
+서버 구동
+ 
+프로젝트 생성 
+app생성
+
+event app 등록 > event.heml 파일 이벤
+
+
+root 페이지 : index 페이지
+http://127.0.0.1:8000
+
+./ : 현재폴더에서 뒤에 그대로 붙이기 (아무것도 안붙여도 같은효과이다)
+
+../ : 이전폴더에서 뒤에 붙이기
+
+/ : root페이지에서 뒤에 붙이기
+
+-- 학생등록페이지
+http://127.0.0.1:8000/students/write/
+
+
+oracle
+creat table student()
+
+wpjt 프로젝트
+-- home 생성
+-- event
+-- students
+-- 모델생성
+-- 파일 2개 입력

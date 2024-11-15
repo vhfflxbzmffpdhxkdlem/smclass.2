@@ -1,0 +1,120 @@
+pip install --upgrade pip
+[디장고 설치]
+pip install Django
+[디장고 업그레이드]
+pip install Django --upgrade
+
+[디장고 위치확인]
+python -c "import django; print(django.__path__)"
+
+*** 디장고 프로젝트
+[ 프로젝트 생성 ]
+django-admin startproject tempPjt
+예)
+django-admin startproject shopmall
+django-admin startproject naverProject
+django-admin startproject kt
+django-admin startproject sktelecom
+
+[ 애플리케이션 생성]
+-- manage.py 사용
+python manage.py startapp students
+
+[ 프로젝트 이름 변경 ]
+-- project 폴더에서 실행
+move tempPjt tempProject
+
+[ DB 테이블 설치 ]
+python manage.py migrate
+
+-- db에 table설치,변경,삭제,추가 있는지 확인
+python manage.py makemigrations
+
+-- 관리자 등록
+python manage.py createsuperuser
+
+-- 서버 구동
+python -u manage.py runserver 0.0.0.0:8000
+
+-- setting.py
+### 한국
+LANGUAGE_CODE = 'ko-kr'
+TIME_ZONE = 'Asia/Seoul'
+
+-- app추가
+
+
+브라우저 url
+http://127.0.0.1:8000/
+-- 관리자페이지
+http://127.0.0.1:8000/admin
+
+-- html 자동완성키 설정
+1. atuo close tag 확장팩 설치
+2. ctrl + 쉼표 
+3. setting
+4. 밑으로 내려서 Font Ligatures -> Edit in settings.json
+
+  "auto-close-tag.activationOnLanguage": [
+      "*"
+  ],
+  "emmet.includeLanguages": { "django-html": "html" }, 
+추가
+
+완료본
+{
+    "workbench.startupEditor": "none",
+    "workbench.colorTheme": "Default Light Modern",
+    "editor.tabSize": 2,
+    "workbench.settings.applyToAllProfiles": [],
+    "editor.fontLigatures": false,
+    "auto-close-tag.activationOnLanguage": [
+        "*"
+    ],
+    "emmet.includeLanguages": { "django-html": "html" },
+}
+
+-- 데이터베이스 생성
+python manage.py migrate
+
+-- 데이터베이스 반영할 변경된것이 있는지 확인
+python manage.py makemigrations
+
+-- 데이터베이스 플러스
+ python manage.py shell
+
+
+from students.models import Student
+-- insert
+qs = Student(s_name='hong1',s_major='컴퓨터공학',s_age=20,s_grade=1,s_gender='M')
+qs.save()
+
+
+-- select 복수
+qs=Student.objects.all()
+qs[0],qs[1]
+
+-- select 1명
+qs = Student.object.get(s_name='hong1')
+qs.s_name
+
+-- update
+qs = Student.object.get(s_name='hong1')
+qs.s_age=25
+qs.save()
+
+
+-- delete
+qs = Student.object.get(s_name-'hone1')
+
+qs.delete()
+
+
+
+
+
+
+
+
+
+

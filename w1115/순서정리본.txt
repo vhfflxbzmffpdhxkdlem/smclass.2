@@ -1,0 +1,41 @@
+1. terminal 에서 w1115 까지 들거가기
+C:\workspace\smclass.2> cd w1115   (w1115로 들어가기)
+cd: 이동하기
+
+2. C:\workspace\smclass.2\w1115> 에서
+django-admin startproject w01project 입력 (디바고 프로젝트 생성)
+
+3. C:\workspace\smclass.2\w1115\w01Project> 로 이동
+
+4. python manage.py startapp student 입력 (student 어플생성)
+
+5. w01Project 의 settings.py 파일들어가기
+
+6. INSTALLED_APPS 에서 apps 추가  ('students.apps.StudentsConfig',)
+
+7. 밑으로 내려서 
+LANGUAGE_CODE = 'en-us' -> LANGUAGE_CODE = 'ko-kr'
+TIME_ZONE = 'UTC'          -> TIME_ZONE = 'Asia/Seoul'
+한국 언어와 시간으로 맞추기
+
+8. urls.py 들어가기
+
+9. 내용추가
+from django.urls import path,(include)
+
+urlpatterns =
+path('students/', include('student.urls')),      (students의 urls 로 이동)
+
+10. students의 urls 을 만들기
+w01Project의 urls를 복사해서 students 에 붙여넣기
+
+11. 내용수정
+from django.contrib import admin
+    path('admin/', admin.site.urls),            내용 지우기
+    path('students/', include('student.urls')),
+
+from . import views
+app_name="students"                          내용 추가    (어플이름 짓고 views로 이동)
+    path('write/', views.write,name='write'),
+
+12.
