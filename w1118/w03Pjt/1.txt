@@ -1,0 +1,116 @@
+cd w1118
+
+django-admin startproject w01Pjt
+
+cd w01Pjt
+
+w01Pjt setting -> INSTALLED_APPS에 'student.apps.StudentsConfig', 추가 
+
+# LANGUAGE_CODE = 'en-us' # TIME_ZONE = 'UTC' -> LANGUAGE_CODE = 'ko-kr' TIME_ZONE = 'Asia/Seoul'
+
+윈도우 + R -> cmd -> cd C:\workspace\smclass.2\w1118\w01Pjt ->python -u manage.py runserever 0.0.0.0:8000
+
+크롬 -> http://127.0.0.1:8000/ -> 확인
+
+w01Pjt -> urls.py -> 
+from django.urls import path -> from django.urls import path, include
+urlpatterns에 path('students/', include('students.urls')), # url 추가
+
+urls.py복사후 students에 붙여넣기
+
+students -> urls.py -> 
+from . import views 
+app_name = 'students'  # name : url시 사용    추가
+urlpatterns 의 내용전부를  path('write/', views.write,name='write'), # 학생입력페이지  로변경
+
+views ->
+def write(request): # html 파일 호출
+  return render(request,'write.html')    추가
+
+students 에 templates 폴더 생성
+
+templates -> write.html 생성
+
+
+
+
+
+students -> write.html
+
+
+
+students models
+# 객체선언 - db테이블 생성
+class Student(models.Model):
+  name = models.CharField(max_length=100)
+  major = models.CharField(max_length=100)
+  grade = models.IntegerField(default=0)
+  age = models.IntegerField(default=0)
+  gender = models.CharField(max_length=10)
+
+def __ste__(self):
+  return self.name
+
+
+students -> admin   모델등록  admin페이지에서 보여준다
+from students.models import Student
+
+## admin페이지에서 3개의 카테고리를 보여줌
+class StudentAdmin(admin.ModelAdmin):
+  list_display=['name','major','age']
+
+admin.site.register(Student,StudentAdmin)
+
+
+terminal
+python manage.py makemigrations 추가,변경,삭제가 있는지 확인
+python manage.py migrate           위에거 있으면 실행
+python manage.py createsuperuser admin생성
+
+http://127.0.0.1:8000/admin/ 들어와서
+유관순	국문학과     	2	21	F
+홍길동	컴퓨터공학	1	20	M    추가
+
+terminal
+python manage.py shell
+from students.models import Student
+qs = Student(name='이순신',major='화학과',grade=3,age=24,gender='M')
+qs.save()
+Student.objects.create(name='강감찬',major='영문학',grade=3,age=23,gender='M') # 세이브를 하지 않아도 바로 저장이 됨
+Student.objects.create(name='김구',major='국사학',grade=1,age=20,gender='M')
+Student.objects.create(name='홍길자',major='미용학',grade=3,age=22,gender='F')
+
+http://127.0.0.1:8000/admin/ 들어와서
+	홍길자	미용학	3	22	F
+	김구	국사학	1	20	M
+	강감찬	영문학	3	23	M
+	이순신	화학과	3	24	M
+	유관순	국문학과	2	21	F
+	홍길동	컴퓨터공학	1	20	M
+
+terminal
+exit
+
+student.writl.html
+<from action="{% url 'students:doWrite' %}" method='post' name='sfrm'>
+    {% comment %} <from action="{% url 'students:write' %}" method='post' name='sfrm'> {% endcomment %}
+
+
+urls
+    path('write/', views.write,name='write1'), # 학생입력페이지
+    path('doWrite/', views.doWrite,name='doWrite1'), # 학생입력페이지
+
+views
+from django.shortcuts import render,redirect
+
+# 학생입력저장
+def doWrite(request):
+  name = request.POST['name']
+  major = request.POST['major']
+  grade = request.POST['grade']
+  age = request.POST['age']
+  gender = request.POST['gender']
+  print("입력데이터 : ",name,major,grade,age,gender)
+  return redirect("/")
+
+
