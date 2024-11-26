@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dq+g9q-ue%l)2zyl%p@ma$36!07shu@3bjc2+ps-gr1y9ilie3'
+SECRET_KEY = 'django-insecure-4^w4son2u2kyb@lwapu4)%1nubk-10jtinjgodam06beo7=_rf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'member',
-    'board',
+    'board.apps.BoardConfig',
 ]
 
 MIDDLEWARE = [
@@ -96,32 +96,27 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-
-
 LANGUAGE_CODE = 'ko-kr'
 TIME_ZONE = 'Asia/Seoul'
-# LANGUAGE_CODE = 'en-us'
-# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-## static url 로 들어오면, static폴더에서 검색
+## static url로 들어오면, static폴더에서 검색
 STATIC_URL = 'static/'
 # static폴더 설정 - css,javaScript,images
 STATICFILES_DIRS = (
-  os.path.join(BASE_DIR,'static'),
+    os.path.join(BASE_DIR,'static'),
 )
 
 ## media url로 들어오면, media폴더에서 검색
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-# MEDIA_ROOT = r'c:/aaa' # 로컬 드라이브 설정
+# MEDIA_ROOT = r'c:/aaa' #로컬 드라이브 설정
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

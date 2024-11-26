@@ -9,14 +9,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
   <link rel="stylesheet" href="{% static 'css/style.css'%}">
   <link rel="stylesheet" href="{% static 'css/read.css'%}">
-  <style>
-    a{cursor: pointer;}
-  </style>
+  <style>a{cursor: pointer;}</style>
   <script>
     function deleteBtn(){
-      if(confirm("{{board.bno}}번 게시글을 삭제하시겠습니까?"))
-      location.href = "/board/bdelete/{{board.bno}}/";
-
+      if(confirm("{{board.bno}} 번 게시글을 삭제하시겠습니까?")){
+        location.href="/board/bdelete/{{board.bno}}/";
+      }
     }
   </script>
 </head>
@@ -32,11 +30,10 @@
         
       </colgroup>
       <tr>
-        <th colspan="3">제목<span class="separator">|</span>{{board.btitle}}</th>
+        <th colspan="3">제목 <span class="separator">|</span> {{board.btitle}} </th>
       </tr>
- 
       <tr>
-        <td><strong>작성자</strong><span class="separator">|</span>{{board.member.id}}</td>
+        <td><strong>작성자</strong> <span class="separator">|</span> {{board.member.name}}</td>
         <td>조회수</td>
         <td>{{board.bhit}}</td>
       </tr>
@@ -48,7 +45,7 @@
           {% if board.bfile %}
           <img src="{{board.bfile.url}}" style="width:600px;">
           {% else %}
-          이미지파일 없음
+          이미지 파일없음
           {% endif %}
         </td>
       </tr>
@@ -61,7 +58,7 @@
     </table>
 
     <a href="/board/blist/"><div class="list">목록</div></a>
-    <a onclick = 'deleteBtn()'><div class="list">삭제</div></a>
+    <a onclick="deleteBtn()"><div class="list">삭제</div></a>
     <a href="/board/bupdate/{{board.bno}}/"><div class="list">수정</div></a>
     <a href="/board/breply/{{board.bno}}/"><div class="list">답변달기</div></a>
   </section>
