@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <ul>
+    <li><a htrf="">이메일??</a></li>
+  </ul>
+  <label for="email">이메일</label>
+  <input type="text" id="email">  
+  <label for="code">인증코드</label>
+  <input type="text" id="code">
+  <button type="button" id="sendEmail">이메일인증</button>
+  <button type="button" id="verifyCode">확인</button>
+
+  <script>
+    // 인증 코드를 저장하는 변수
+    let verificationCode = null;
+
+    // 이메일 인증 버튼 클릭 이벤트
+    document.getElementById('sendEmail').addEventListener('click', () => {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        alert('이메일을 입력해주세요.');
+        return;
+      }
+
+      // 이메일 유효성 검사 (간단한 정규식 예제)
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('유효한 이메일 주소를 입력해주세요.');
+        return;
+      }
+
+      // 인증 코드 생성 (6자리 숫자)
+      verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log('생성된 인증 코드:', verificationCode); // 실제로는 서버에서 처리해야 함.
+
+      // 이메일 발송 (여기서는 서버가 없으므로 발송 과정 생략)
+      alert(`인증 코드가 ${email}로 전송되었습니다. (현재는 콘솔에서 확인 가능)`);
+
+      // 서버로 이메일 전송 로직이 들어갈 자리
+      // 예: fetch('/send-email', { method: 'POST', body: JSON.stringify({ email, verificationCode }) });
+    });
+
+    // 인증 코드 확인 버튼 클릭 이벤트
+    document.getElementById('verifyCode').addEventListener('click', () => {
+      const inputCode = document.getElementById('code').value.trim();
+
+      if (!inputCode) {
+        alert('인증 코드를 입력해주세요.');
+        return;
+      }
+
+      if (inputCode === verificationCode) {
+        alert('인증에 성공했습니다!');
+        // 인증 성공 후 추가 로직
+      } else {
+        alert('인증 코드가 일치하지 않습니다.');
+      }
+    });
+  </script>
+</body>
+</html>
