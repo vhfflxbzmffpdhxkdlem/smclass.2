@@ -345,7 +345,7 @@
       <!-- 프로필 -->
       <div id="user_profile">
         <div id="pimg">
-          <img src="/static/images/home/default_profile.png" alt="" />
+          <img src="{{ qb.img.url }}" alt="" />
         </div>
         <p id="uName">{{my.name}}</p>
         <p id="uEmail">{{my.mail}}</p>
@@ -378,12 +378,14 @@
       <div id="my_pimg">
         <img
           id="preview"
-          src="/static/images/home/default_profile.png"
+          src="{{ qb.img.url }}"
           alt="미리보기 이미지"
         />
       </div>
 
       <!-- 프로필 사진 변경 버튼 아직 사진 저장은 안됨. -->
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
       <label for="file">
         <div class="profile_upload">프로필 사진 변경</div>
         <input
@@ -394,7 +396,6 @@
           onchange="loadFile(this)"
         />
       </label>
-
       <!-- 회원 정보 -->
       <table>
         <tr>
