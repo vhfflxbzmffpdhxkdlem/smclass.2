@@ -111,15 +111,11 @@ button:hover {
   align-items: center;
   margin-bottom: 30px;
 }
-.checkbox input{
-  margin-right: 10px;
-}
-
 .checkbox div{
   font-size: 13px;
   cursor: pointer;
   color: #666666;
-  margin-left: 60px;
+  margin-left: 70px;
   text-align: right;
   display: flex;
   cursor: pointer;

@@ -25,7 +25,7 @@ login_button.addEventListener('click', () => {
   if (pw_input.value.trim() === '') {
     if (id_input.value.trim() != '') {
 
-      loginerrorMessage2.style.display = 'block'; 
+      loginerrorMessage2.style.display = 'block';
       if (isValid) {
         pw_input.focus(); // 첫 번째 입력 필드가 비어있지 않으면 두 번째로 포커스 이동
       }
@@ -61,18 +61,6 @@ pw_input.addEventListener('blur', () => {
     }
   }
 
-// 엔터 키 입력 감지
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    // 현재 입력 필드가 아이디 또는 비밀번호일 때만 실행
-    if (
-      document.activeElement === logintextInput1 ||
-      document.activeElement === logintextInput2
-    ) {
-      loginsubmitButton.click(); // 로그인 버튼 클릭 이벤트 실행
-    }
-  }
-});
 
 });
 document.addEventListener("DOMContentLoaded", function() {

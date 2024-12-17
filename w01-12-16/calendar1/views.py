@@ -1,227 +1,375 @@
-from django.shortcuts import render, redirect
-from calendar1.models import Event
+from django.shortcuts import render,redirect
+from admin1.models import Administrator
+from loginpage.models import Member
+from loginpage.models import Member
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
+import json
 from loginpage.models import Member
-from datetime import timedelta
-from datetime import datetime
-from django.db.models import Q
-from itertools import chain
-
-@csrf_exempt
-def update_event(request):
-  if request.method == 'POST':
-    event_id = request.POST.get('event_id')
-    title = request.POST.get('title')
-    color = request.POST.get('color')  # 색상 받아오기
-    start_date = request.POST.get('start_date')
-    end_date = request.POST.get('end_date')
-    location = request.POST.get('location')
-    repeat = request.POST.get('repeat')
-    memo = request.POST.get('memo')
+from django.db.models import Max
+from admin1.models import Administrator
+from customer.models import NoticeBoard
 
 
+# 어드민 로그인
+def admin_login(request):
+	if request.method == 'GET':
+		return render(request, 'admin_login.html')
+	else:
+		id = request.POST.get('user_id')
+		pw = request.POST.get('user_pw')
 
-    event = Event.objects.get(no=event_id)  # 이벤트 찾기
-    # 기존 이벤트를 삭제하기 전에 반복 이벤트도 함께 삭제
-    if event.repeat != 'none':
-      Event.objects.filter(no=event_id).delete()
+		qs = Administrator.objects.filter(id=id,pw=pw)
+		if qs:
+			request.session['session_id'] = id
+			request.session['session_role'] = qs[0].role
 
-    event.title = title
-    event.color = color  # 색상 수정 (튜플 쉼표 제거)
-    event.start_date = start_date
-    event.end_date = end_date
-    event.location = location
-    event.repeat = repeat
-    event.memo = memo
-    event.save()  # 수정된 내용 저장
+			context = {'lmsg':'1'}
+		else:
+			context = {'lmsg':'0'}
+		return render(request, 'admin_login.html', context)
+	
 
-    # 반복 처리
-    if repeat != 'none':
-      current_start_date = timezone.datetime.fromisoformat(start_date)
-      current_end_date = timezone.datetime.fromisoformat(end_date)
+# 어드민 로그아웃
+def admin_logout(request):
+	request.session.clear()
+	context = {"outMsg":'1'}
+	return render(request, 'admin_memList.html', context)
+	
 
-      for _ in range(1, 2):  # 예시로 최대 12번 반복 (필요에 따라 수정)
-        if repeat == 'daily':
-          current_start_date += timedelta(days=1)
-          current_end_date += timedelta(days=1)
-        elif repeat == 'weekly':
-          current_start_date += timedelta(weeks=1)
-          current_end_date += timedelta(weeks=1)
-        elif repeat == 'monthly':
-          current_start_date = current_start_date.replace(month=current_start_date.month % 12 + 1)
-          current_end_date = current_end_date.replace(month=current_end_date.month % 12 + 1)
-        elif repeat == 'yearly':
-          current_start_date = current_start_date.replace(year=current_start_date.year + 1)
-          current_end_date = current_end_date.replace(year=current_end_date.year + 1)
+# 유저 리스트
+def admin_memList(request):
+	qs = Member.objects.all()
+	context = {"mlist":qs}
+	return render(request, 'admin_memList.html', context)
 
-        # 반복 이벤트 생성
-        Event.objects.create(
-          title=title,
-          color=color,
-          start_date=current_start_date,
-          end_date=current_end_date,
-          location=location,
-          repeat=repeat,
-          memo=memo,
-        )
+# 유저 상세정보
+def admin_memView(request,id):
+	qs = Member.objects.get(id=id)
+	context = {"mem":qs}
+	return render(request, 'admin_memView.html', context)
 
+# 유저 정보 수정
+def admin_memUpdate(request,id):
+	if request.method == "GET":
+		qs = Member.objects.get(id=id)
+		context = {"mem":qs}
+		return render(request, 'admin_memUpdate.html', context)
+	else:
+		id = request.POST.get('user_id')
+		name = request.POST.get('user_name')
+		nicName = request.POST.get('nickname')
+		mail = request.POST.get('email')
+		mdate = request.POST.get('sdate')
 
-    return JsonResponse({'success': True}, status=200)
+		qs = Member.objects.get(id=id)
+		qs.id = id
+		qs.name = name
+		qs.nicName = nicName
+		qs.mail = mail
+		qs.mdate = mdate
+		qs.save()
+		return redirect('admin1:admin_memView', id)
 
-  return JsonResponse({'error': '잘못된 요청입니다.'}, status=400)
+# 유저정보 삭제
+def admin_memDelete(request,id):
+	Member.objects.get(id=id).delete()
 
-# 모든 이벤트를 JSON 형식으로 반환
-def son(request):
-  events = Event.objects.all()  # 모든 이벤트 가져오기
-  events_data = []
-  for event in events:
-    events_data.append({
-      'id': event.no,
-      'title': event.title,
-      'color': event.color,
-      'start': event.start_date.isoformat(),
-      'end': event.end_date.isoformat(),
-      'location': event.location,
-      'memo': event.memo,
-      'repeat': event.repeat,
-    })
-  return JsonResponse(events_data, safe=False)
+	context = {'dmsg':id}
+	return render(request, 'admin_memView.html', context)
 
-# 캘린더 페이지 렌더링 및 이벤트 생성
-def cal(request):
-  if request.method == "POST":
-    title = request.POST.get('title')
-    color = request.POST.get('color')  # 색상 받아오기
-    start_date = request.POST.get('start_date')
-    end_date = request.POST.get('end_date')
-    location = request.POST.get('location')
-    repeat = request.POST.get('repeat')
-    memo = request.POST.get('memo')
+# 체크박스 유저 삭제
+def admin_memsDelete(request):
+	if request.method == 'POST':
+			try:
+					data = json.loads(request.body)  # 요청에서 JSON 데이터 파싱
+					members_to_delete = data.get('members', [])
 
-    # datetime 형식으로 변환
-    start_date = timezone.datetime.fromisoformat(start_date)
-    end_date = timezone.datetime.fromisoformat(end_date)
+					# 실제로 데이터베이스에서 삭제
+					for member_id in members_to_delete:
+							# Member는 회원 테이블 모델로 변경해야 합니다.
+							Member.objects.filter(id=member_id).delete()
 
-    # 이벤트 생성
-    Event.objects.create(
-      title=title,
-      color=color,  # 색상 저장
-      start_date=start_date,
-      end_date=end_date,
-      location=location,
-      repeat=repeat,
-      memo=memo,
-    )
+					return JsonResponse({'status': 'success'}, status=200)
+			except Exception as e:
+					return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+	return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-    # 반복 설정에 따른 추가 이벤트 생성
-    if repeat != 'none':
-      current_start_date = start_date
-      current_end_date = end_date
+# 유저추가페이지
+def admin_memAdd(request):
+	if request.method == 'GET':
+		return render(request, 'admin_memAdd.html')
+	else:
+		id = request.POST.get('user_id')
+		name = request.POST.get('user_name')
+		nicName = request.POST.get('nickname')
+		mail = request.POST.get('email')
+		birthday = request.POST.get('birthday')
+		gender = request.POST.get('gender')
+		mdate = request.POST.get('sdate')
 
-      for _ in range(1, 3):  # 예시로 최대 12번 반복 (필요에 따라 수정)
-        if repeat == 'daily':
-          current_start_date += timedelta(days=1)
-          current_end_date += timedelta(days=1)
-        elif repeat == 'weekly':
-          current_start_date += timedelta(weeks=1)
-          current_end_date += timedelta(weeks=1)
-        elif repeat == 'monthly':
-          current_start_date = current_start_date.replace(month=current_start_date.month % 12 + 1)
-          current_end_date = current_end_date.replace(month=current_end_date.month % 12 + 1)
-        elif repeat == 'yearly':
-          current_start_date = current_start_date.replace(year=current_start_date.year + 1)
-          current_end_date = current_end_date.replace(year=current_end_date.year + 1)
+		qs = Member.objects.create(id=id,name = name,nicName = nicName,mail = mail,birthday = birthday,gender = gender,mdate = mdate)
+	
+		qs.save()
 
-        # 반복 이벤트 생성
-        Event.objects.create(
-          title=title,
-          color=color,
-          start_date=current_start_date,
-          end_date=current_end_date,
-          location=location,
-          repeat=repeat,
-          memo=memo,
-        )
-
-    return redirect(f'/calendar1/cal/')
-  else:
-    id = request.session.get('session_id')
-    user = Member.objects.get(id=id)
-    context = {'user':user}
-    created_group = user.created_group or ''
-    joined_group = user.joined_group or ''
-    joined_group_members = Member.objects.filter(joined_group=created_group) if created_group else []
-    created_group_members = Member.objects.filter(Q(created_group=joined_group) | Q(joined_group=joined_group)).exclude(id=id) if joined_group else []
-    
-    members = list({member.id: member for member in chain(joined_group_members, created_group_members)}.values())
-    members.append(user)
-
-    # 현재 members 목록에 없는 생일 이벤트 삭제
-    member_names = [member.name for member in members]  # 현재 members의 이름 리스트
-    Event.objects.filter(title__endswith="의 생일").exclude(
-    title__startswith=tuple(member_names)
-    ).delete()
-
-    for member in members:
-
-      # **생일 정보가 변경되었을 때 이전의 생일 이벤트 삭제하고 새로 저장**
-      if isinstance(member.birthday, str):
-          member_birthday = datetime.strptime(member.birthday, '%Y-%m-%d')  # 문자열을 datetime으로 변환
-      else:
-          member_birthday = member.birthday  # 이미 datetime 객체라면 그대로 사용
+		context = {"amsg":name}
+		return render(request, 'admin_memList.html', context)
 
 
-      # 생일 이벤트가 이미 있다면 삭제
-      Event.objects.filter(title=f'{member.name}의 생일', start_date__year=member_birthday.year).delete()
-      
+# 관리자 리스트
+def admin_adminList(request):
+	qs = Administrator.objects.all()
+	context = {"adminList":qs}
+	return render(request, 'admin_adminList.html', context)
 
-      # 생일 이벤트 생성 (반복 설정 포함)
-      if isinstance(member.birthday, str):
-          member_birthday = datetime.strptime(member.birthday, '%Y-%m-%d')  # 문자열을 datetime으로 변환
-      else:
-          member_birthday = member.birthday  # 이미 datetime 객체라면 그대로 사용
+# 관리자 추가
+def admin_adminAdd(request):
+	if request.method == 'GET':
+		return render(request, 'admin_adminAdd.html')
+	else:
+		id = request.POST.get('admin_id')
+		pw = request.POST.get('admin_pw')
+		name = request.POST.get('admin_name')
+		tel = request.POST.get('tel')
+		role = request.POST.get('role')
+		if role == '3':
+			nickname = '수퍼관리자'
+		else:
+			nickname = '관리자'
 
-      Event.objects.create(
-        title=f'{member.name}의 생일',  # 이벤트 제목
-        color='yellow',  # 색상
-        start_date=member.birthday,  # 생일 날짜 (시작)
-        end_date=member.birthday,  # 생일 날짜 (끝)
-        repeat='yearly'
-      )
+		qs = Administrator.objects.create(id=id,pw=pw,name=name,nickname=nickname,tel=tel,role=role)
+		no = Administrator.objects.aggregate(max_ano = Max('ano'))
+		qs.ano = no['max_ano']+1
+		qs.save()
+		
+		return redirect('/admin1/admin_adminList/')
 
-      # 생일 이벤트가 처음 생성될 때, 이후에도 반복되도록 추가 이벤트 생성
-      current_start_date = member_birthday
-      current_end_date = member_birthday
+# 관리자 상세보기
+def admin_adminView(request,id):
+	qs = Administrator.objects.get(id=id)
+	context = {"admin":qs}
+	return render(request, 'admin_adminView.html', context)
 
-      for _ in range(1, 10):  # 예시로 최대 12년 반복 (필요에 따라 수정)
-        current_start_date = current_start_date.replace(year=current_start_date.year + 1)
-        current_end_date = current_end_date.replace(year=current_end_date.year + 1)
+# 관리자 정보수정
+def admin_adminUpdate(request,id):
+	if request.method == 'GET':
+		qs = Administrator.objects.get(id=id)
+		context = {"admin":qs}
+		return render(request, 'admin_adminUpdate.html', context)
+	else:
+		id = request.POST.get('admin_id')
+		pw = request.POST.get('admin_pw')
+		name = request.POST.get('admin_name')
+		tel = request.POST.get('tel')
+		role = request.POST.get('role')
+		if role == '3':
+			nickname = '수퍼관리자'
+		else:
+			nickname = '관리자'
 
-        # 반복 생일 이벤트 생성
-        Event.objects.create(
-          title=f'{member.name}의 생일',
-          color='yellow',
-          start_date=current_start_date,
-          end_date=current_end_date,
-          repeat='yearly',
-          memo=f'{member.name}의 생일입니다.',
-        )
+		qs = Administrator.objects.get(id=id)
+		qs.id = id
+		qs.pw = pw
+		qs.name = name
+		qs.tel = tel
+		qs.role = role
+		qs.nickname = nickname
+		qs.save()
+		return redirect('admin1:admin_adminView', id)
+	
+# 관리자 삭제
+def admin_adminDelete(request,id):
+	Administrator.objects.get(id=id).delete()
 
-    return render(request, 'calendar.html',context)
+	context = {'dmsg':id}
+	return render(request, 'admin_adminView.html', context)
 
-@csrf_exempt
-def delete_event(request):
-  if request.method == 'POST':
-    event_id = request.POST.get('event_id')
 
-    try:
-      event = Event.objects.get(no=event_id)  
-      event.delete()
-      return JsonResponse({'success': True}, status=200)
-    except Event.DoesNotExist:
-      return JsonResponse({'error': '이벤트를 찾을 수 없습니다.'}, status=404)
+# 체크박스 관리자 삭제
+def admin_adminsDelete(request):
+	if request.method == 'POST':
+			try:
+					data = json.loads(request.body)  # 요청에서 JSON 데이터 파싱
+					members_to_delete = data.get('members', [])
+					# print("Members to delete:", members_to_delete)
 
-  return JsonResponse({'error': '잘못된 요청입니다.'}, status=400)
+					# 실제로 데이터베이스에서 삭제
+					for member_id in members_to_delete:
+							Administrator.objects.filter(id=member_id).delete()
+
+					return JsonResponse({'status': 'success'}, status=200)
+			except Exception as e:
+					return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+	return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+
+# 공지사항 리스트
+def admin_noticeList(request):
+	qs = NoticeBoard.objects.filter(category=1).order_by("-bno")
+	context = {"notiList":qs}
+	return render(request, 'admin_noticeList.html', context)
+
+def admin_noticeList2(request):
+	# 요청에서 데이터 가져오기
+	data = json.loads(request.body)
+	status = data.get('status')
+	bno = data.get('bno')
+	print(status)
+	print(bno)
+
+	# bno로 객체 조회 및 상태 업데이트
+	qs = NoticeBoard.objects.get(bno=bno)
+	qs.status = status
+	qs.save()
+
+	return JsonResponse({'success': True})
+
+# 공지사항 쓰기
+def admin_notiWrite(request):
+	if request.method == 'GET':
+		return render(request, 'admin_notiWrite.html')
+	else:
+		id = request.session.get('session_id')
+		member = Administrator.objects.get(id=id)
+		btitle = request.POST.get("title")
+		bcontent = request.POST.get("content")
+		bfile = request.FILES.get('bfile','')
+		category = 1
+		NoticeBoard.objects.create(member=member,btitle=btitle,bcontent=bcontent,bfile=bfile,category=category, status='게시안함')
+		context = {'wmsg':'1'}
+		return render(request, 'admin_noticeList.html', context)
+	
+# 공지사항 상세보기
+def admin_notiView(request, bno):
+	qs = NoticeBoard.objects.get(bno=bno)
+	## 이전글
+	prev_qs = NoticeBoard.objects.filter(bno__lt=bno, category=1).order_by('-bno').first()
+	# 다음글
+	next_qs = NoticeBoard.objects.filter(bno__gt=bno, category=1).order_by('bno').first()
+	
+	context = {
+		"noti": qs,
+		"prev_board": prev_qs,
+		"next_board": next_qs,
+	}
+	return render(request, 'admin_notiView.html', context)
+
+# 공지사항 삭제
+def admin_notiDelete(request, bno):
+	NoticeBoard.objects.get(bno=bno).delete()
+	context = {'dmsg':bno}
+	return render(request, 'admin_noticeList.html', context)
+
+# 체크박스 게시글 삭제
+def admin_notisDelete(request):
+	if request.method == 'POST':
+			try:
+					data = json.loads(request.body)  # 요청에서 JSON 데이터 파싱
+					members_to_delete = data.get('members', [])
+					# print("Members to delete:", members_to_delete)
+
+					# 실제로 데이터베이스에서 삭제
+					for member_id in members_to_delete:
+							NoticeBoard.objects.filter(bno=member_id).delete()
+
+					return JsonResponse({'status': 'success'}, status=200)
+			except Exception as e:
+					return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+	return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+# 포스트 리스트
+def admin_postList(request):
+	qs = NoticeBoard.objects.filter(category=2).order_by("-bno")
+	context = {"postList":qs}
+	return render(request, 'admin_postList.html', context)
+
+
+# 포스트 쓰기
+def admin_postWrite(request):
+	if request.method == 'GET':
+		return render(request, 'admin_postWrite.html')
+	else:
+		id = request.session.get('session_id')
+		member = Administrator.objects.get(id=id)
+		btitle = request.POST.get("title")
+		bcontent = request.POST.get("content")
+		bfile = request.FILES.get('bfile','')
+		bfile_thumbnail = request.FILES.get('bfile_thumbnail','')
+		category = 2
+		NoticeBoard.objects.create(member=member,btitle=btitle,bcontent=bcontent,bfile_thumbnail=bfile_thumbnail,bfile=bfile,category=category)
+		context = {'wmsg':'1'}
+		return render(request, 'admin_postList.html', context)
+
+# 포스트 상세보기
+def admin_postView(request, bno):
+	qs = NoticeBoard.objects.get(bno=bno)
+	## 이전글
+	prev_qs = NoticeBoard.objects.filter(bno__lt=bno, category=2).order_by('-bno').first()
+	# 다음글
+	next_qs = NoticeBoard.objects.filter(bno__gt=bno, category=2).order_by('bno').first()
+	
+	context = {
+		"post": qs,
+		"prev_board": prev_qs,
+		"next_board": next_qs,
+	}
+	return render(request, 'admin_postView.html', context)
+
+# 포스트 삭제
+def admin_postDelete(request, bno):
+	NoticeBoard.objects.get(bno=bno).delete()
+	context = {'dmsg':bno}
+	return render(request, 'admin_postList.html', context)
+
+
+# 1:1 리스트
+def admin_qList(request):
+	qs_ok = NoticeBoard.objects.filter(category=3, status='답변 완료').order_by("-bno")
+	qs_no = NoticeBoard.objects.filter(category=3, status='답변 전').order_by("-bno")
+	# 작성자
+	context = {'oklist':qs_ok, 'nolist':qs_no}
+	return render(request, 'admin_qList.html', context)
+
+def admin_qListView(request, bno):
+	qs = NoticeBoard.objects.get(bno=bno)
+	## 이전글
+	prev_qs = NoticeBoard.objects.filter(bno__lt=bno, category=3).order_by('-bno').first()
+	# 다음글
+	next_qs = NoticeBoard.objects.filter(bno__gt=bno, category=3).order_by('bno').first()
+	
+	context = {
+		"q": qs,
+		"prev_board": prev_qs,
+		"next_board": next_qs,
+	}
+
+	return render(request, 'admin_qListView.html', context)
+
+def admin_qListchg(request, bno):
+	qs = NoticeBoard.objects.get(bno=bno)
+	qs.status = '답변 완료'
+	qs.save()
+	return redirect('/admin1/admin_qList/')
+
+def admin_qListchg2(request):
+	import json
+	data = json.loads(request.body)
+	members = data.get('members', [])  # members 배열 받기
+
+
+	# 'bno'에 해당하는 항목들을 찾아 'status'를 '답변 완료'로 업데이트
+	NoticeBoard.objects.filter(bno__in=members).update(status="답변 완료")
+
+	return render(request, 'admin_qList.html')
+
+def admin_qListchg3(request):
+	import json
+	data = json.loads(request.body)
+	members = data.get('members', [])  # members 배열 받기
+
+
+	# 'bno'에 해당하는 항목들을 찾아 'status'를 '답변 완료'로 업데이트
+	NoticeBoard.objects.filter(bno__in=members).update(status="답변 전")
+
+	return render(request, 'admin_qList.html')
 
