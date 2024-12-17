@@ -157,43 +157,57 @@ def cal(request):
     
     members = list({member.id: member for member in chain(joined_group_members, created_group_members)}.values())
     members.append(user)
+
+    # 현재 members 목록에 없는 생일 이벤트 삭제
+    member_names = [member.name for member in members]  # 현재 members의 이름 리스트
+    Event.objects.filter(title__endswith="의 생일").exclude(
+    title__startswith=tuple(member_names)
+    ).delete()
+
     for member in members:
-      # 해당 멤버의 생일 이벤트가 이미 생성되었는지 확인
-      event_exists = Event.objects.filter(title=f'{member.name}의 생일', start_date=member.birthday).exists()
+
+      # **생일 정보가 변경되었을 때 이전의 생일 이벤트 삭제하고 새로 저장**
+      if isinstance(member.birthday, str):
+          member_birthday = datetime.strptime(member.birthday, '%Y-%m-%d')  # 문자열을 datetime으로 변환
+      else:
+          member_birthday = member.birthday  # 이미 datetime 객체라면 그대로 사용
+
+
+      # 생일 이벤트가 이미 있다면 삭제
+      Event.objects.filter(title=f'{member.name}의 생일', start_date__year=member_birthday.year).delete()
       
-      if not event_exists:  # 이벤트가 없다면 생성
 
-        # 생일 이벤트 생성 (반복 설정 포함)
-        if isinstance(member.birthday, str):
-            member_birthday = datetime.strptime(member.birthday, '%Y-%m-%d')  # 문자열을 datetime으로 변환
-        else:
-            member_birthday = member.birthday  # 이미 datetime 객체라면 그대로 사용
+      # 생일 이벤트 생성 (반복 설정 포함)
+      if isinstance(member.birthday, str):
+          member_birthday = datetime.strptime(member.birthday, '%Y-%m-%d')  # 문자열을 datetime으로 변환
+      else:
+          member_birthday = member.birthday  # 이미 datetime 객체라면 그대로 사용
 
+      Event.objects.create(
+        title=f'{member.name}의 생일',  # 이벤트 제목
+        color='yellow',  # 색상
+        start_date=member.birthday,  # 생일 날짜 (시작)
+        end_date=member.birthday,  # 생일 날짜 (끝)
+        repeat='yearly'
+      )
+
+      # 생일 이벤트가 처음 생성될 때, 이후에도 반복되도록 추가 이벤트 생성
+      current_start_date = member_birthday
+      current_end_date = member_birthday
+
+      for _ in range(1, 50):  # 예시로 최대 12년 반복 (필요에 따라 수정)
+        current_start_date = current_start_date.replace(year=current_start_date.year + 1)
+        current_end_date = current_end_date.replace(year=current_end_date.year + 1)
+
+        # 반복 생일 이벤트 생성
         Event.objects.create(
-          title=f'{member.name}의 생일',  # 이벤트 제목
-          color='yellow',  # 색상
-          start_date=member.birthday,  # 생일 날짜 (시작)
-          end_date=member.birthday,  # 생일 날짜 (끝)
-          repeat='yearly'
+          title=f'{member.name}의 생일',
+          color='yellow',
+          start_date=current_start_date,
+          end_date=current_end_date,
+          repeat='yearly',
+          memo=f'{member.name}의 생일입니다.',
         )
-
-        # 생일 이벤트가 처음 생성될 때, 이후에도 반복되도록 추가 이벤트 생성
-        current_start_date = member_birthday
-        current_end_date = member_birthday
-
-        for _ in range(1, 3):  # 예시로 최대 12년 반복 (필요에 따라 수정)
-          current_start_date = current_start_date.replace(year=current_start_date.year + 1)
-          current_end_date = current_end_date.replace(year=current_end_date.year + 1)
-
-          # 반복 생일 이벤트 생성
-          Event.objects.create(
-            title=f'{member.name}의 생일',
-            color='yellow',
-            start_date=current_start_date,
-            end_date=current_end_date,
-            repeat='yearly',
-            memo=f'{member.name}의 생일입니다.',
-          )
 
     return render(request, 'calendar.html',context)
 
