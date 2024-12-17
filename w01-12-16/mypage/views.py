@@ -10,10 +10,9 @@ def main(request):
   qs = Member.objects.filter(id=id)
 
   # 생년월일을 8자리 문자열로 받았다 가정
-  birth_date = qs[0].birthday
+  formatted_birth_date = qs[0].birthday
 
   # 문자열 슬라이싱을 통해 년, 월, 일을 분리하고 점으로 구분
-  formatted_birth_date = f"{birth_date[:4]}.{birth_date[4:6]}.{birth_date[6:]}"
 
   print(formatted_birth_date)  # 결과: 1990.12.31
 
