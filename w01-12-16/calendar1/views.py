@@ -195,7 +195,7 @@ def cal(request):
       current_start_date = member_birthday
       current_end_date = member_birthday
 
-      for _ in range(1, 50):  # 예시로 최대 12년 반복 (필요에 따라 수정)
+      for _ in range(1, 10):  # 예시로 최대 12년 반복 (필요에 따라 수정)
         current_start_date = current_start_date.replace(year=current_start_date.year + 1)
         current_end_date = current_end_date.replace(year=current_end_date.year + 1)
 
