@@ -6,6 +6,8 @@ from django.utils import timezone
 from loginpage.models import Member
 from datetime import timedelta
 from datetime import datetime
+from django.db.models import Q
+from itertools import chain
 
 @csrf_exempt
 def update_event(request):
@@ -148,7 +150,13 @@ def cal(request):
     id = request.session.get('session_id')
     user = Member.objects.get(id=id)
     context = {'user':user}
-    members = Member.objects.all()
+    created_group = user.created_group or ''
+    joined_group = user.joined_group or ''
+    joined_group_members = Member.objects.filter(joined_group=created_group) if created_group else []
+    created_group_members = Member.objects.filter(Q(created_group=joined_group) | Q(joined_group=joined_group)) if joined_group else []
+    
+    members = list({member.id: member for member in chain(joined_group_members, created_group_members)}.values())
+    members.append(user)
     for member in members:
       # 해당 멤버의 생일 이벤트가 이미 생성되었는지 확인
       event_exists = Event.objects.filter(title=f'{member.name}의 생일', start_date=member.birthday).exists()
@@ -174,18 +182,18 @@ def cal(request):
         current_end_date = member_birthday
 
         for _ in range(1, 3):  # 예시로 최대 12년 반복 (필요에 따라 수정)
-            current_start_date = current_start_date.replace(year=current_start_date.year + 1)
-            current_end_date = current_end_date.replace(year=current_end_date.year + 1)
+          current_start_date = current_start_date.replace(year=current_start_date.year + 1)
+          current_end_date = current_end_date.replace(year=current_end_date.year + 1)
 
-            # 반복 생일 이벤트 생성
-            Event.objects.create(
-                title=f'{member.name}의 생일',
-                color='yellow',
-                start_date=current_start_date,
-                end_date=current_end_date,
-                repeat='yearly',
-                memo=f'{member.name}의 생일입니다.',
-            )
+          # 반복 생일 이벤트 생성
+          Event.objects.create(
+            title=f'{member.name}의 생일',
+            color='yellow',
+            start_date=current_start_date,
+            end_date=current_end_date,
+            repeat='yearly',
+            memo=f'{member.name}의 생일입니다.',
+          )
 
     return render(request, 'calendar.html',context)
 
