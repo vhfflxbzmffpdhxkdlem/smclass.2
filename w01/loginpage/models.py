@@ -8,7 +8,7 @@ class Member(models.Model):
   name = models.CharField(max_length=100)
   nicName = models.CharField(max_length=100,default='123')
   mail = models.EmailField(max_length=100)
-  birthday = models.CharField(max_length=50)
+  birthday = models.CharField(max_length=100)
   gender = models.CharField(max_length=10,choices=[('남자', '남자'), ('여자', '여자')])
   mdate = models.DateTimeField(auto_now=True)
   # mdate = models.DateTimeField(default=datetime.now())
@@ -30,4 +30,12 @@ class Member(models.Model):
   
 
   def __str__(self):
-    return f"{self.id},{self.name},{self.mdate}"
+    return f"{self.id},{self.name},{self.mdate},{self.created_group},{self.joined_group}"
+  
+
+class Img(models.Model):
+  id = models.CharField(max_length=50, primary_key=True)  # 고유한 ID
+  img = models.ImageField(upload_to='images/', null=True, blank=True, default='../static/images/calendar1/default_profile.png')  # 디폴트 이미지 설정
+
+  def __str__(self):
+    return f"ID: {self.id}, Image: {self.img}"
