@@ -153,7 +153,7 @@ def cal(request):
     created_group = user.created_group or ''
     joined_group = user.joined_group or ''
     joined_group_members = Member.objects.filter(joined_group=created_group) if created_group else []
-    created_group_members = Member.objects.filter(Q(created_group=joined_group) | Q(joined_group=joined_group)) if joined_group else []
+    created_group_members = Member.objects.filter(Q(created_group=joined_group) | Q(joined_group=joined_group)).exclude(id=id) if joined_group else []
     
     members = list({member.id: member for member in chain(joined_group_members, created_group_members)}.values())
     members.append(user)
