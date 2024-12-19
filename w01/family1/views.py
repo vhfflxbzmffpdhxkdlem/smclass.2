@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from diary.models import GroupDiary
 
+
 def add_member(request):
   # 로그인한 사용자 ID 가져오기
   id = request.session.get('session_id')

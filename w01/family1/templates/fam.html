@@ -149,7 +149,7 @@
           location.reload();  // 삭제 후 페이지 새로 고침
         },
         error: function(xhr, errmsg, err) {
-          alert('삭제에 실패했습니다.',);
+          alert('삭제에 실패했습니다.');
         }
       });
     });
@@ -411,15 +411,15 @@
           <div id="small_title1" class="small_title">{{joined_group_name}}</div>
           <div class="small_list" id="small_list2">
             {% if created_group_members %}
-            {% for member in created_group_members %}
-            <div class="small_list_2">
-              <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
-              <div class="summ">
-                <div class="small_name">{{member.member.name}}</div>
-                <div class="small_bir">{{member.member.birthday}}</div>
+              {% for member in created_group_members %}
+              <div class="small_list_2">
+                <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
+                <div class="summ">
+                  <div class="small_name">{{member.member.name}}</div>
+                  <div class="small_bir">{{member.member.birthday}}</div>
+                </div>
               </div>
-            </div>
-            {% endfor %}
+              {% endfor %}
             {% endif %}
           </div>
           
