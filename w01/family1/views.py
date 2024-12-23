@@ -23,17 +23,10 @@ def add_member(request):
 
     # 현재 로그인한 사용자의 created_group 가져오기
     user = Member.objects.get(id=id)
-    created_group = user.created_group
 
-    # 멤버가 이미 joined_group을 가지고 있는지 확인
-    if member.joined_group is None:
-      # joined_group이 None일 경우에만 추가
-      member.joined_group = created_group
-      member.save()
-      return JsonResponse({'success': '멤버가 추가되었습니다.'})
-    else:
-      # 이미 joined_group이 존재할 경우
-      return JsonResponse({'error': '이미 다른 그룹에 속해 있습니다.'})
+
+
+
 
   except Member.DoesNotExist:
     return JsonResponse({'error': '멤버를 찾을 수 없습니다.'}, status=404)
