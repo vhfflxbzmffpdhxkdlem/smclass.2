@@ -214,7 +214,7 @@
     <!-- 프로필 -->
     <div id="user_profile">
       <div id="pimg">
-        <img src="{% static 'images/family1/default_profile.png'%}" alt="" />
+        <img src="{{ qb.img.url }}" alt="" />
       </div>
       <p id="uName">{{user.name}}</p>
       <p id="uEmail">{{user.mail}}</p>
