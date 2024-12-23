@@ -137,19 +137,26 @@
     $(document).on('click', '.list_deleteBtn', function() {
       const memberId = $(this).data('member-id'); // 버튼에서 member_id 가져오기
       
+      // 삭제 확인 메시지 추가 (옵션)
+      if (!confirm('정말 이 멤버를 삭제하시겠습니까?')) {
+        return;  // 사용자가 취소 버튼을 클릭하면 요청을 보내지 않음
+      }
+    
       // 삭제 요청 보내기
       $.ajax({
-        url: '/family1/delete_member/' + memberId + '/',  // delete_member 뷰의 URL
+        url: '/family1/delete_member/' + memberId + '/',
         type: 'POST',
         data: {
-          'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF 토큰 추가
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {
           alert('멤버가 삭제되었습니다.');
           location.reload();  // 삭제 후 페이지 새로 고침
         },
         error: function(xhr, errmsg, err) {
-          alert('삭제에 실패했습니다.');
+          console.log('memberId:', memberId);
+          console.log('XHR response:', xhr.responseText);  // 서버에서 받은 전체 응답 내용 출력
+          alert('삭제에 실패했습니다. 오류: ' + errmsg);  // 메시지 출력
         }
       });
     });
@@ -392,7 +399,7 @@
                 <div class="summ">
                   <div class="small_name">{{member.member.name}}</div>
                   <div class="small_bir">{{member.member.birthday}}</div>
-                  <button type=button class="list_deleteBtn" data-member-id="{{ member.id }}">삭제</button>
+                  <button type=button class="list_deleteBtn" data-member-id="{{ member.member.id }}">삭제</button>
                 </div>
               </div>
               {% endfor %}

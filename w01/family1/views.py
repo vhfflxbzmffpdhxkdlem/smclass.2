@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from diary.models import GroupDiary
 from django.views.decorators.csrf import csrf_exempt
-
+from django.views.decorators.http import require_POST
 
 
 @csrf_exempt  # 테스트 시 CSRF 검증 해제 (프로덕션 환경에서는 사용 금지)
@@ -44,35 +44,40 @@ def add_member(request):
         return JsonResponse({'error': f'서버 에러: {str(e)}'}, status=500)
 
 
-
+@require_POST
 def delete_member(request, member_id):
-    # 현재 로그인한 사용자 ID 가져오기
+    print(f"Attempting to delete member with ID: {member_id}")  # 멤버 ID 로그 출력
+    
     id = request.session.get('session_id')
     if not id:
+        print("No session ID found.")  # 세션 ID 로그
         return JsonResponse({'error': '로그인이 필요합니다.'}, status=400)
 
     try:
         # 삭제할 멤버 찾기
         member = get_object_or_404(Member, id=member_id)
-        
-        # 멤버가 속한 그룹 정보 확인
+        print(f"Found member: {member.name}")  # 멤버 이름 출력
+
         if member.joined_group:
-            # 그룹 다이어리에서 해당 멤버를 찾고 삭제
+            print(f"Member is in group {member.joined_group}")  # 그룹 이름 출력
             group_diary = GroupDiary.objects.filter(member=member, gno=member.joined_group.gno).first()
             if group_diary:
-                group_diary.delete()  # 해당 그룹 다이어리 삭제
+                print(f"Deleting group diary for member {member.name}")  # 그룹 다이어리 삭제 출력
+                group_diary.delete()
 
-            # 멤버의 joined_group을 None으로 설정
             member.joined_group = None
             member.save()
-
+            print(f"Member {member.name}'s group removed.")  # 멤버 그룹 제거 출력
             return JsonResponse({'success': '멤버가 삭제되었습니다.'})
         else:
+            print(f"Member {member.name} is not in a group.")  # 그룹에 속하지 않은 경우
             return JsonResponse({'error': '삭제할 멤버는 그룹에 속해 있지 않습니다.'}, status=400)
 
     except Member.DoesNotExist:
+        print(f"Member with ID {member_id} does not exist.")  # 멤버를 찾을 수 없는 경우
         return JsonResponse({'error': '멤버를 찾을 수 없습니다.'}, status=404)
     except Exception as e:
+        print(f"Error: {str(e)}")  # 기타 예외 발생 시 출력
         return JsonResponse({'error': f'서버 에러: {str(e)}'}, status=500)
 
 
