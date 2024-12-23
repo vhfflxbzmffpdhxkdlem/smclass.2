@@ -163,13 +163,15 @@
         alert("아이디를 입력하세요.");
         return;
       }
-  
+      // CSRF 토큰 가져오기
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
       $.ajax({
         url: '/family1/add_member/',  // 추가할 뷰의 URL
         type: 'POST',
+        headers: { 'X-CSRFToken': csrftoken }, // CSRF 토큰 추가
         data: {
-          'csrfmiddlewaretoken': '{{ csrf_token }}',  // CSRF 토큰
-          'member_id': memberId  // 입력된 멤버 ID
+          'member_id': memberId
         },
         success: function(response) {
           if (response.success) {
@@ -371,40 +373,43 @@
       <div id="non" class="{% if has_group %}hide{% else %}show{% endif %}">가족이 존재하지 않습니다. 가족을 추가하세요.<br>
       <a href="/diary/diaryMake/" id="hidden_a">가족 추가하러 가기</a>
       </div>
-
-      <div id ="back_cover">
-
-      
-        <div id="main_me" class="{% if created_group %}show{% else %}hide{% endif %}">
+      <form method="post">
+        {% csrf_token %}
+        <div id ="back_cover">
           
-          <div id="small_title1" class="small_title">{{created_group_name}}</div>
-          <button type='button' id='king'>편집</button>
-
-          <div class="small_list" id="small_list1">
-            {% if joined_group_members %}
+          
+          
+          <div id="main_me" class="{% if created_group %}show{% else %}hide{% endif %}">
+            
+            <div id="small_title1" class="small_title">{{created_group_name}}</div>
+            <button type='button' id='king'>편집</button>
+            
+            <div class="small_list" id="small_list1">
+              {% if joined_group_members %}
               {% for member in joined_group_members%}
-                <div class="small_list_1">
-                  <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
-                  <div class="summ">
-                    <div class="small_name">{{member.member.name}}</div>
-                    <div class="small_bir">{{member.member.birthday}}</div>
-                    <button type=button class="list_deleteBtn" data-member-id="{{ member.id }}">삭제</button>
-                  </div>
+              <div class="small_list_1">
+                <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
+                <div class="summ">
+                  <div class="small_name">{{member.member.name}}</div>
+                  <div class="small_bir">{{member.member.birthday}}</div>
+                  <button type=button class="list_deleteBtn" data-member-id="{{ member.id }}">삭제</button>
                 </div>
+              </div>
               {% endfor %}
-            {% endif %}
-
-
-          </div>
-          <div id="add_Btn_input">
-            <input type="text" id="add_input" placeholder="  추가할 맴버의 아이디를 검색하세요.">
-          </div>
-          <div id="add_Btn_toggle">
-            <button type="button" id="add_Bton">맴버추가하기</button>
-          </div>
-          <div class="small_toggle" id='small_toggle_id1'>
-            <button id="toggleButton1">더보기</button>
-          </div>
+              {% endif %}
+              
+              
+            </div>
+            <div id="add_Btn_input">
+              <input type="text" name = "add_member1" id="add_input" placeholder="  추가할 맴버의 아이디를 검색하세요.">
+            </div>
+            <div id="add_Btn_toggle">
+              <button type="button" id="add_Bton">맴버추가하기</button>
+            </div>
+            <div class="small_toggle" id='small_toggle_id1'>
+              <button id="toggleButton1">더보기</button>
+            </div>
+          </form>
 
         </div>
         <div id="main_me2" class="{% if joined_group %}show{% else %}hide{% endif %}">

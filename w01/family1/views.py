@@ -4,32 +4,44 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from diary.models import GroupDiary
+from django.views.decorators.csrf import csrf_exempt
 
 
+
+@csrf_exempt  # 테스트 시 CSRF 검증 해제 (프로덕션 환경에서는 사용 금지)
 def add_member(request):
-  # 로그인한 사용자 ID 가져오기
-  id = request.session.get('session_id')
-  if not id:
-    return JsonResponse({'error': '로그인이 필요합니다.'}, status=400)
+    id = request.session.get('session_id')
+    if not id:
+        return JsonResponse({'error': '로그인이 필요합니다.'}, status=400)
 
-  # 입력된 멤버 ID 가져오기
-  member_id = request.POST.get('member_id')
-  if not member_id:
-    return JsonResponse({'error': '멤버 ID를 입력하세요.'}, status=400)
+    member_id = request.POST.get('member_id')
+    if not member_id:
+        return JsonResponse({'error': '멤버 ID를 입력하세요.'}, status=400)
 
-  try:
-    # 멤버 찾기
-    member = get_object_or_404(Member, id=member_id)
+    try:
+        user = get_object_or_404(Member, id=id)
+        group_diary = GroupDiary.objects.filter(member=user, role=1).first()
 
-    # 현재 로그인한 사용자의 created_group 가져오기
-    user = Member.objects.get(id=id)
+        if not group_diary:
+            return JsonResponse({'error': '그룹이 없습니다. 먼저 그룹을 생성하세요.'}, status=400)
 
+        add_member2 = get_object_or_404(Member, id=member_id)
 
+        if add_member2.joined_group:
+            return JsonResponse({'error': '이미 다른 그룹에 속해 있습니다.'})
 
+        # 멤버 추가
+        GroupDiary.objects.create(gno=group_diary.gno, member=add_member2, role=2, gtitle= group_diary.gtitle)
+        add_member2.joined_group = group_diary
+        add_member2.save()
 
+        return JsonResponse({'success': '멤버가 추가되었습니다.'})
 
-  except Member.DoesNotExist:
-    return JsonResponse({'error': '멤버를 찾을 수 없습니다.'}, status=404)
+    except Member.DoesNotExist:
+        return JsonResponse({'error': '멤버를 찾을 수 없습니다.'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'error': f'서버 에러: {str(e)}'}, status=500)
 
 
 
@@ -43,17 +55,25 @@ def delete_member(request, member_id):
         # 삭제할 멤버 찾기
         member = get_object_or_404(Member, id=member_id)
         
-        # 현재 사용자가 삭제할 멤버의 그룹에 속해 있는지 확인
+        # 멤버가 속한 그룹 정보 확인
         if member.joined_group:
-            # joined_group을 빈 값으로 설정
+            # 그룹 다이어리에서 해당 멤버를 찾고 삭제
+            group_diary = GroupDiary.objects.filter(member=member, gno=member.joined_group.gno).first()
+            if group_diary:
+                group_diary.delete()  # 해당 그룹 다이어리 삭제
+
+            # 멤버의 joined_group을 None으로 설정
             member.joined_group = None
             member.save()
+
             return JsonResponse({'success': '멤버가 삭제되었습니다.'})
         else:
-            return JsonResponse({'error': '삭제할 멤버의 그룹 정보가 없습니다.'}, status=400)
+            return JsonResponse({'error': '삭제할 멤버는 그룹에 속해 있지 않습니다.'}, status=400)
 
     except Member.DoesNotExist:
         return JsonResponse({'error': '멤버를 찾을 수 없습니다.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'서버 에러: {str(e)}'}, status=500)
 
 
 
