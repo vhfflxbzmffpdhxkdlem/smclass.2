@@ -69,13 +69,14 @@
       }
 
       .profile_upload {
-        width: 92px;
+        display: inline-block;
+        width: 60px;
         height: 21px;
         font-size: 14px;
         font-weight: 400;
         line-height: 150%;
         margin-top: 20px;
-        margin-left: 40px;
+        margin-left: 20px;
         text-decoration: underline;
         cursor: pointer;
       }
@@ -263,6 +264,20 @@
         font-weight: 400;
         line-height: 150%;
       }
+      #profile_img{
+        display: inline-block;
+        width: 60px;
+        height: 21px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 150%;
+        margin-top: 10px;
+        margin-left: 10px;
+        text-decoration: underline;
+        cursor: pointer;
+        background-color:white;
+        border: none;
+      }
     </style>
 
     <script>
@@ -384,10 +399,10 @@
       </div>
 
       <!-- 프로필 사진 변경 버튼 아직 사진 저장은 안됨. -->
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'mypage:profile_upload' %}">
         {% csrf_token %}
       <label for="file">
-        <div class="profile_upload">프로필 사진 변경</div>
+        <div class="profile_upload">사진 변경</div>
         <input
           type="file"
           name="file"
@@ -396,6 +411,8 @@
           onchange="loadFile(this)"
         />
       </label>
+      <button type="submit" id="profile_img">사진 저장</button>
+      </form>
       <!-- 회원 정보 -->
       <table>
         <tr>

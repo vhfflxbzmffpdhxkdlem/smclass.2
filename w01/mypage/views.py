@@ -5,6 +5,22 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 
 
+@csrf_exempt
+def profile_upload(request):
+    if request.method == "POST":
+        user_id = request.session['session_id']  # 현재 세션의 사용자 ID
+        user_img = Img.objects.get(id=user_id)  # 해당 ID에 맞는 객체 불러오기
+
+        uploaded_file = request.FILES.get('file')  # 업로드된 파일 가져오기
+        if uploaded_file:
+            user_img.img = uploaded_file  # 이미지 필드 업데이트
+            user_img.save()  # DB에 저장
+            return redirect('/mypage/main/')  # 완료 후 마이페이지로 리다이렉트
+        else:
+            return HttpResponse("파일 업로드 실패", status=400)
+    return HttpResponse("잘못된 요청", status=400)
+
+
 # Create your views here.
 def main(request):
   id = request.session['session_id']
