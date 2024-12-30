@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from diary.models import GroupDiary
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from loginpage.models import Img
+from mypage.models import Img
 
 
 @csrf_exempt  # 테스트 시 CSRF 검증 해제 (프로덕션 환경에서는 사용 금지)

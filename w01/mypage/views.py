@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from loginpage.models import Member
-from loginpage.models import Img
+from mypage.models import Img
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 
@@ -33,7 +33,8 @@ def main(request):
 
   print(formatted_birth_date)  # 결과: 1990.12.31
 
-  context = {'my':qs[0], 'my_birth':formatted_birth_date, "qb":qb}
+  context = {'my':qs[0], 'my_birth':formatted_birth_date, "qb":qb
+             }
   return render(request, 'mymain.html', context)
 
 def modify(request):

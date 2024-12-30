@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from loginpage.models import Member
-from loginpage.models import Img
+from mypage.models import Img
 from django.contrib import messages
 import smtplib
 import random
