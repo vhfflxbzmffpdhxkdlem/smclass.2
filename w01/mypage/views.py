@@ -17,8 +17,8 @@ def profile_upload(request):
             user_img.save()  # DB에 저장
             return redirect('/mypage/main/')  # 완료 후 마이페이지로 리다이렉트
         else:
-            return HttpResponse("파일 업로드 실패", status=400)
-    return HttpResponse("잘못된 요청", status=400)
+            return redirect('/mypage/main/')
+    return redirect('/mypage/main/')
 
 
 # Create your views here.

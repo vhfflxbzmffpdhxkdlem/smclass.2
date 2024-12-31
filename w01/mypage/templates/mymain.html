@@ -360,6 +360,7 @@
           document.getElementById('profile_img').style.display = 'none';
         }
       }
+      
 
     </script>
   </head>
@@ -421,8 +422,8 @@
       <!-- 프로필 사진 변경 버튼 아직 사진 저장은 안됨. -->
       <form method="POST" enctype="multipart/form-data" action="{% url 'mypage:profile_upload' %}">
         {% csrf_token %}
-      <label for="file">
-        <div class="profile_upload"id="profile-upload-div" onclick="showButton()">사진 변경</div>
+      <label for="file" id="profile-upload-div">
+        <div class="profile_upload" onclick="showButton()">사진 변경</div>
         <input
           type="file"
           name="file"
@@ -432,8 +433,13 @@
           style="display: none;" 
         />
       </label>
-      <button type="submit" id="profile_img" style="display: none;">사진 저장</button>
+      <button type="submit" id="profile_img" style="display: none;" onclick="return confirmSave();">사진 저장</button>
       </form>
+      <script>
+        function confirmSave() {
+          return confirm("사진을 저장하시겠습니까?");
+        }
+      </script>
       <!-- 회원 정보 -->
       <table>
         <tr>
