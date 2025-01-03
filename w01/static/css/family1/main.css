@@ -360,6 +360,7 @@ box-sizing: border-box;
 	width: 400px;
 	height: 420px;
 	border-radius: 20px;
+  overflow-y: auto; /* 세로 스크롤 추가 */
 	padding-bottom:10px; /* 내부 여백 */
 	box-sizing: border-box; /* padding과 border 포함 */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
