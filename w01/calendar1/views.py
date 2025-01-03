@@ -9,6 +9,7 @@ from datetime import datetime
 from django.db.models import Q
 from itertools import chain
 from diary.models import GroupDiary
+from mypage.models import Img
 
 @csrf_exempt
 def update_event(request):
@@ -150,7 +151,8 @@ def cal(request):
   else:
     id = request.session.get('session_id')
     user = Member.objects.get(id=id)
-    context = {'user': user}
+    qb = Img.objects.get(id=id)
+    context = {'user': user, 'qb':qb}
 
     # GroupDiary에서 Member 객체 추출
     created_group_diary = GroupDiary.objects.filter(member=user, role=1).first()
