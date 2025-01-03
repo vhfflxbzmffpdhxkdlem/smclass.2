@@ -42,6 +42,50 @@
         $('#s_overlay').removeClass('show');
       });
   
+      // 검색창 검색기능
+      $('.search_box input').on('keypress', function(event){
+        if (event.key == 'Enter') {
+          // 입력값과 일치하는 일기 찾기
+          alert("데이터가 검색되었습니다.")
+          ctitle = "{{Content.ctitle}}"
+          cdate = "{{Content.cdate}}"
+          ccontent = "{{Content.ccontent}}"
+          cno = "{{Content.cno}}"
+          //ajax 구문
+          $.ajax({
+            headers:{"X-CSRFToken":$("meta[name='csrf-token']").attr("content")},
+            url:"/main/search/",
+            type:"post",
+            data:{"csearch":$("#csearch").val()}, //views.py데이터 보냄
+            success:function(data){
+              //data -> 넘어온 검색결과
+              console.log("리스트 : "+data.list_qs)
+              console.log("리스트 : "+data.list_qs[0])
+              console.log("리스트개수 : "+data.list_qs.length)
+              //html보내는 부분
+              var hdata = ""
+              hdata += `<div id="search_result">검색 결과 <span>(${data.list_qs.length})</span></div>`
+              for(var i=0;i<data.list_qs.length;i++){
+                // cdate를 Date 객체로 변환 > 0년0월0일로 형식 변환
+                var cdate = new Date(data.list_qs[i].cdate);  
+                var formattedDate = cdate.getFullYear() + "년 " + (cdate.getMonth() + 1) + "월 " + cdate.getDate() + "일";
+                hdata += `<div class="search_list"><a href="/diary/diary_view/${data.list_qs[i].cno}/">
+                <span class="s_title"> ${data.list_qs[i].ctitle}</span>
+                      <span class="s_date">${formattedDate}</span>
+                      <img src="/static/images/home/right.png" alt="">
+                      </a>
+                      </div>`
+              }
+                  $("#search_content").html(hdata)
+                },
+                error:function(){
+                  alert("에러")
+                }
+              })
+            }
+            event.preventDefault(); // 기본 제출 방지
+      });
+  
   
       // 알림창
       $('#notiBtn').click(function() {
@@ -57,6 +101,24 @@
         $('#n_overlay').removeClass('show');
       });
     });
+  
+    function diaryWriteBtn() {
+        // 알림 메시지 표시
+        alert("일기를 작성하러 이동합니다!");
+  
+        // 일기 작성 창으로 이동 (URL은 원하는 페이지로 변경)
+        window.location.href = "/diary/diaryWrite/";
+    }
+  
+    function pastdiaryBtn() {
+        // 일기 작성 창으로 이동 (URL은 원하는 페이지로 변경)
+        window.location.href = "/diary/diary_view/{{past.cno}}/";
+    }
+  
+    function family_Btn() {
+        // 일기 작성 창으로 이동 (URL은 원하는 페이지로 변경)
+        window.location.href = "/family1/fam/";
+    }
 
 
   </script>
@@ -102,7 +164,7 @@
     </div>
   </div>
 
-  <!-- 검색창 슬라이드 -->
+  	<!-- 검색창 슬라이드 -->
 	<div id="s_overlay" class="s_overlay"></div>
 	<div id="main_search" class="search_bar closed">
 		<div id="input_wrap">
@@ -130,58 +192,58 @@
 				</div>
 			</div>
 		</div>
-
-
-  <!-- 알림창 슬라이드 -->
-  <div id="n_overlay" class="n_overlay"></div>
-  <div id="noti_side" class="sidebar closed">
-    <div class="noti_header">
-      <h2>알림</h2>
-      <button id="noti_closeBtn"><img src="/static/images/home/close_icon.png" alt="알림창닫기"></button>
+	
+	
+	<!-- 알림창 슬라이드 -->
+	<div id="n_overlay" class="n_overlay"></div>
+	<div id="noti_side" class="sidebar closed">
+		<div class="noti_header">
+			<h2>알림</h2>
+			<button id="noti_closeBtn"><img src="/static/images/home/close_icon.png" alt="알림창닫기"></button>
     </div>
     <ul id="noti_list">
-      <li class="noti_list">
-        <a href="">
-          <div>
-            <img src="/static/images/home/default_profile.png" alt="프로필이미지">
-          </div>
-          <div>
-            <p>장서윤 님이 새로운 기록을 공유했어요.</p>
-          </div>
-        </a>
-      </li>
-      <li class="noti_list checked">
-        <a href="">
-          <div>
-            <img src="/static/images/home/default_profile.png" alt="프로필이미지">
-          </div>
-          <div>
-            <p>배현지 님이 용준님의 기록에 좋아요를 눌렀어요.</p>
-          </div>
-        </a>
-      </li>
-      <li class="noti_list checked">
-        <a href="">
-          <div>
-            <img src="/static/images/home/default_profile.png" alt="프로필이미지">
-          </div>
-          <div>
-            <p>이다영 님이 용준님의 기록에 댓글을 남겼어요.</p>
-          </div>
-        </a>
-      </li>
-      <li class="noti_list checked">
-        <a href="">
-          <div>
-            <img src="/static/images/home/default_profile.png" alt="프로필이미지">
-          </div>
-          <div>
-            <p>정종원 님이 용준님의 기록에 좋아요를 남겼어요.</p>
-          </div>
-        </a>
-      </li>
+			<li class="noti_list">
+				<a href="">
+					<div>
+						<img src="/static/images/home/default_profile.png" alt="프로필이미지">
+					</div>
+					<div>
+						<p>장서윤 님이 새로운 기록을 공유했어요.</p>
+					</div>
+				</a>
+			</li>
+			<li class="noti_list checked">
+				<a href="">
+					<div>
+						<img src="/static/images/home/default_profile.png" alt="프로필이미지">
+					</div>
+					<div>
+						<p>배현지 님이 용준님의 기록에 좋아요를 눌렀어요.</p>
+					</div>
+				</a>
+			</li>
+			<li class="noti_list checked">
+				<a href="">
+					<div>
+						<img src="/static/images/home/default_profile.png" alt="프로필이미지">
+					</div>
+					<div>
+						<p>이다영 님이 용준님의 기록에 댓글을 남겼어요.</p>
+					</div>
+				</a>
+			</li>
+			<li class="noti_list checked">
+				<a href="">
+					<div>
+						<img src="/static/images/home/default_profile.png" alt="프로필이미지">
+					</div>
+					<div>
+						<p>정종원 님이 용준님의 기록에 좋아요를 남겼어요.</p>
+					</div>
+				</a>
+			</li>
     </ul>
-  </div>
+	</div>
 
 
 
