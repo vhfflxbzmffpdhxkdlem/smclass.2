@@ -1,6 +1,5 @@
 from django.urls import path,include
 from . import views
-from .views import profile_upload
 
 app_name = "mypage"
 urlpatterns = [
@@ -9,5 +8,5 @@ urlpatterns = [
     path('modify/', views.modify, name="modify"),
     path('modify/currpw_chk/', views.currpw_chk, name="currpw_chk"),
     path('modify/pw_chg/', views.pw_chg, name="pw_chg"),
-    path('mypage/profile_upload/', profile_upload, name='profile_upload'),
+    path('profile_upload', views.profile_upload, name="profile_upload"),
 ]

@@ -7,4 +7,6 @@ urlpatterns = [
     path('index/', views.main,name="main"),
     path('logout/', views.logout,name="logout"),
     path('search/', views.search,name="search"),
+    path('get_family_members/', views.get_family_members,name="get_family_members"),
+    path('get_emotion_graph/<member_id>/', views.get_emotion_graph,name="get_emotion_graph"),
 ]

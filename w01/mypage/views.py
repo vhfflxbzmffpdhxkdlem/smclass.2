@@ -17,15 +17,15 @@ def profile_upload(request):
             user_img.save()  # DB에 저장
             return redirect('/mypage/main/')  # 완료 후 마이페이지로 리다이렉트
         else:
-            return redirect('/mypage/main/')
-    return redirect('/mypage/main/')
+            return HttpResponse("파일 업로드 실패", status=400)
+    return HttpResponse("잘못된 요청", status=400)
 
 
 # Create your views here.
 def main(request):
   id = request.session['session_id']
   qs = Member.objects.filter(id=id)
-  qb = Img.objects.get(id=id)
+  qb = Img.objects.filter(id=id).first()
   # 생년월일을 8자리 문자열로 받았다 가정
   formatted_birth_date = qs[0].birthday
 

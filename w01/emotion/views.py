@@ -8,6 +8,9 @@ from calendar import monthrange
 from loginpage.models import Member
 from diary.models import Content
 from emotion.models import EmotionScore
+from comment.models import Comment
+from mypage.models import Img
+
 
 # AI PYTHON
 import os
@@ -15,6 +18,19 @@ import base64
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
 import vertexai
 from django.conf import settings
+
+
+# 검색창
+def search(request):
+  id = request.session['session_id']
+  csearch = request.POST.get("csearch")
+  print("csearch : ",csearch)
+  member = Member.objects.get(id=id)
+  qs = list(Content.objects.filter(Q(member=member,ctitle__contains=csearch)|Q(member=member,ccontent__contains=csearch) ).values())
+  print("qs : ",qs)
+  context = {"list_qs":qs}
+  return JsonResponse(context)
+
 
 def save_content_to_txt():
     # Content 모델에서 모든 게시글 가져오기
@@ -140,12 +156,20 @@ def run_ai_process(request):
     return render(request, 'report.html', {'content': output_content})
 
 def report(request):
-    return render(request, 'report.html')
+    id = request.session['session_id']
+    member = Member.objects.filter(id=id).first()
+    qb = Img.objects.filter(id=id).first()
+    context = {
+        'member':member,
+        'qb':qb,
+    }
+    return render(request, 'report.html', context)
 
 def main(request):
   # 프로필 가져오기 
   id = request.session['session_id']
   mem = Member.objects.filter(id = id )
+  qb = Img.objects.filter(id=id).first()
   name = mem[0].name
   # 날짜 가져오기
   current_date = datetime.today()
@@ -172,7 +196,8 @@ def main(request):
       'week':week_number, 
       'name':name[1:],
       'total_value':total_value,
-      'total_value2':total_value2
+      'total_value2':total_value2,
+      'my_img':qb,
       }
   return render(request, 'e_main.html', context)
 
@@ -225,7 +250,6 @@ def main_data1(request):
         average_value = round(values['total_value'] / values['count'], 2) if values['count'] > 0 else 0
         data.append({"name": f"{week}주", "value": average_value})
 
-    print("Final Data:", data)  # 디버깅용
     return JsonResponse(data, safe=False)
 
 def main_data2(request):
@@ -304,15 +328,22 @@ def main_data2(request):
 def main_data4(request):
   # 프로필 가져오기 
   id = Member.objects.get(id = request.session['session_id'])
-  scores = EmotionScore.objects.filter(member=id)
+  # 내가 쓴 글 필터링
+  my_contents = Content.objects.filter(member=id)
+  # 내가 쓴 글에 달린 댓글 필터링 및 작성자별 댓글 수 집계
+  commenter_counts = (
+    Comment.objects.filter(content__in=my_contents)
+    .exclude(member=id)  # 내가 쓴 댓글 제외
+    .values('member__name')  # 댓글 작성자 이름
+    .annotate(count=Count('id'))  # 댓글 수
+    .order_by('-count')  # 댓글 수 기준 정렬
+  )
 
+   # 상위 4명만 선택
+  top_commenters = commenter_counts[:4]
   data = [
-     { "name": "배현지", "value": 7 },
-    { "name": "이다영", "value": 11 },
-    { "name": "장서윤", "value": 88 },
-    { "name": "정종원", "value": 16 },
+    {'name': item['member__name'], 'value': item['count']} for item in top_commenters
   ]
-  print('데이터4',data)
   return JsonResponse(data, safe=False)
 
 def main_data5(request):
@@ -370,7 +401,6 @@ def main_data5(request):
         'value2': sdiary_count
     })
 
-  print('데이터 5 : ',data)
   # 데이터를 역순으로 정렬 (가장 최근 데이터가 오른쪽에 오도록)
   data.reverse()
   return JsonResponse(data, safe=False)

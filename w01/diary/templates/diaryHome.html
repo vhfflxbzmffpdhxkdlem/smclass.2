@@ -83,10 +83,10 @@
   <!-- 프로필 -->
   <div id="user_profile">
     <div id="pimg">
-      <img src="/static/images/home/default_profile.png" alt="">
+      <img src="{{ qb.img.url }}" alt="" />
     </div>
-    <p id="uName">김용준</p>
-    <p id="uEmail">kyjoon0105@gmail.com</p>
+    <p id="uName">{{info.name}}</p>
+    <p id="uEmail">{{info.mail}}</p>
   </div>
   <!-- Nav -->
   <nav id="menu">
@@ -276,7 +276,7 @@
         <div class="diary_member">
           <p>
             {% if creator %}
-              {{ request.session.session_name }}
+              {{ pDiary.id.name }}
               {% if joined_members %}
                 {% for joined_member in joined_members %}
                 , {{ joined_member.member.name }}
@@ -306,7 +306,7 @@
           </div>
         </div>
         <div class="diary_member">
-          <p>{{ request.session.session_name }}</p>
+          <p>{{ pDiary.id.name }}</p>
         </div>
         <div class="diary_date">
           <p>{{pDiary.mdate|date:"Y.m.d"}} ~</p>

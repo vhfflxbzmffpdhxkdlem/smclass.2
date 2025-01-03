@@ -351,7 +351,7 @@
         document.getElementById('profile-upload-div').style.display = 'inline-block';
         document.getElementById('profile_img').style.display = 'none';
       }
-      
+
       function confirmSave() {
         // 저장 버튼 클릭 시 확인 메시지
         if (confirm('사진을 저장하시겠습니까?')) {
@@ -362,7 +362,6 @@
           return false; // 저장 취소
         }
       }
-      
 
     </script>
   </head>
@@ -421,34 +420,24 @@
         />
       </div>
 
-      <!-- 프로필 사진 변경 버튼 -->
+      <!-- 프로필 사진 변경 버튼 아직 사진 저장은 안됨. -->
       <form method="POST" enctype="multipart/form-data" action="{% url 'mypage:profile_upload' %}">
         {% csrf_token %}
-        
-        <!-- Label 영역 -->
-        <label id="profile-upload-div" style="display: inline-block;" onclick="toggleToButton()">
-          <div class="profile_upload">프로필 사진 변경</div>
-          <input
-            type="file"
-            name="file"
-            id="file"
-            accept="image/*"
-            onchange="loadFile(this); toggleDisplay()"
-            style="display: none;"
-          />
-        </label>
-      
-        <!-- 버튼 영역 -->
-        <button
-          type="submit"
-          id="profile_img"
+      <!-- Label 영역 -->
+      <label id="profile-upload-div" style="display: inline-block;" onclick="toggleToButton()">
+        <div class="profile_upload">프로필 사진 변경</div>
+        <input
+          type="file"
+          name="file"
+          id="file"
+          accept="image/*"
+          onchange="loadFile(this); toggleDisplay()"
           style="display: none;"
-          onclick="return confirmSave();" 
-        >
-          프로필 사진 저장
-        </button>
+        />
+      </label>
+      <button type="submit" id="profile_img" style="display: none;" onclick="return confirmSave();" >사진 저장</button>
       </form>
-      </form>
+      
       <!-- 회원 정보 -->
       <table>
         <tr>
