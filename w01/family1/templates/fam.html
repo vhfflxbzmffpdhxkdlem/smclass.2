@@ -121,131 +121,115 @@
       const smallItems1 = smallList1.querySelectorAll('.small_list_1');
       const smallToggle1 = document.getElementById('small_toggle_id1');
       const smallToggle2 = document.getElementById('small_toggle_id2');
-      
-      
-      // "더보기" 버튼의 표시 여부 처리
-      const toggleMoreButtonVisibility = (items, toggle) => {
-        toggle.style.display = items.length <= 4 ? 'none' : 'block';
-      };
-      toggleMoreButtonVisibility(smallItems1, smallToggle1);
-      toggleMoreButtonVisibility(smallItems1, smallToggle2);
-      
-      // "더보기" 버튼 클릭 시 동작
-      toggleButton1.addEventListener('click', () => {
-        const editButton = document.getElementById('king');
-        const expanded = mainMe.classList.toggle('expanded');
-        smallList1.classList.toggle('expanded');
-        // "더보기" 클릭 시 편집 버튼 숨기기
-        if (expanded) {
-          editButton.style.display = 'none'; // 더보기 클릭 시 편집 버튼 숨기기
-        } else {
-          editButton.style.display = 'inline-block'; // 접기 클릭 시 편집 버튼 다시 보이게 하기
-        }
-
-        toggleButton1.textContent = expanded ? '접기' : '더보기';
-      });
-    
       const toggleButton2 = document.getElementById('toggleButton2');
       const mainMe2 = document.getElementById('main_me2');
       const smallList2 = document.getElementById('small_list2');
       const smallItems2 = smallList2.querySelectorAll('.small_list_2');
-      
-      // "더보기" 버튼 표시 여부 처리 (small_list_2)
-      if (smallItems2.length <= 4) {
-        smallToggle2.style.display = 'none';
-      }else{
-        smallToggle2.style.display = 'block';
-      }
-      
-      // "더보기" 버튼 클릭 시 동작 (small_list_2)
-      toggleButton2.addEventListener('click', () => {
-        const expanded = mainMe2.classList.toggle('expanded');
-        smallList2.classList.toggle('expanded');
-        toggleButton2.textContent = expanded ? '접기' : '더보기';
-      });
-    
-      // 편집 버튼 클릭 시 스타일 변경 및 텍스트 변경
       const editButton = document.getElementById('king');
       const deleteButtons1 = document.querySelectorAll('.list_deleteBtn');
       const addButtonToggle = document.getElementById('add_Btn_toggle');
-    
+      const addInput = document.getElementById('add_Btn_input');
+      const addButton = document.getElementById('add_Bton');
+      
+      // "더보기" 버튼 표시 여부 처리
+      const toggleMoreButtonVisibility = (items, toggle) => {
+        toggle.style.display = items.length <= 4 ? 'none' : 'block';
+      };
+      toggleMoreButtonVisibility(smallItems1, smallToggle1);
+      toggleMoreButtonVisibility(smallItems2, smallToggle2);
+      
+      // "더보기" 버튼 클릭 시 동작
+      const toggleListVisibility = (toggleButton, mainMe, smallList, toggleText) => {
+        toggleButton.addEventListener('click', () => {
+          const expanded = mainMe.classList.toggle('expanded');
+          smallList.classList.toggle('expanded');
+          toggleButton.textContent = expanded ? '접기' : toggleText;
+        });
+      };
+      
+      toggleListVisibility(toggleButton1, mainMe, smallList1, '더보기');
+      toggleListVisibility(toggleButton2, mainMe2, smallList2, '더보기');
+      
+      // 편집 상태 관리
+      let isEditing = false;
+
       editButton.addEventListener('click', () => {
-        const isEditing = editButton.classList.contains('editing');
-        const smallToggle1 = document.getElementById('small_toggle_id1');
-        const addInput = document.getElementById('add_Btn_input');
-        
-        
+        // 상태 토글
+        isEditing = !isEditing;
+
         if (isEditing) {
-          // 편집 모드 -> 완료 모드
+          // "편집" -> "완료" 상태로 전환
           editButton.textContent = '완료';
           editButton.style.color = 'blue';
           editButton.style.textDecoration = 'underline';
-          deleteButtons1.forEach(button => button.style.display = 'inline-block');
+          deleteButtons1.forEach(button => (button.style.display = 'inline-block'));
           addButtonToggle.style.display = 'block';
-          
-          // "더보기" 상태를 해제 (더보기 버튼을 눌렀을 때의 상태 복원)
-          if (toggleButton1.textContent === '더보기') {
-            toggleButton1.click(); // 접기 상태라면 더보기로 변경
-          }
+
+          // "더보기" 상태를 해제
+          if (toggleButton1.textContent === '더보기') toggleButton1.click();
+
           // smallToggle1 숨기기
-          if (smallToggle1) {
-            smallToggle1.style.display = 'none';
-            editButton.style.display = 'inline-block'; // 접기 클릭 시 편집 버튼 다시 보이게 하기
-            
-          }
+          if (smallToggle1) smallToggle1.style.display = 'none';
         } else {
-          // 완료 모드 -> 편집 모드
+          // "완료" -> "편집" 상태로 전환
           editButton.textContent = '편집';
           editButton.style.color = '';
           editButton.style.textDecoration = '';
-          deleteButtons1.forEach(button => button.style.display = 'none');
+          deleteButtons1.forEach(button => (button.style.display = 'none'));
           addButtonToggle.style.display = 'none';
-          addInput.style.display = 'none'; // display 속성을 block으로 변경
+          addInput.style.display = 'none';
+          
 
           // smallToggle1 원래 상태로 복원
           if (smallList1.querySelectorAll('.small_list_1').length > 4) {
             smallToggle1.style.display = 'block';
           }
         }
-        
-        // 맴버 추가하기 인풋 등장
-        const addButton = document.getElementById('add_Bton');
-        addButton.addEventListener('click', () => {
-          addInput.style.display = 'block'; // display 속성을 block으로 변경
-        });
-
-        // 편집 상태 토글
-        editButton.classList.toggle('editing');
       });
+
+  // 맴버 추가하기 인풋 등장
+  if (addButton) {
+    addButton.addEventListener('click', () => {
+      addInput.style.display = 'block';
     });
+  }
+});
+    
     
     
     $(document).on('click', '.list_deleteBtn', function() {
       const memberId = $(this).data('member-id'); // 버튼에서 member_id 가져오기
-      
+      const currentUserId = '{{ user.id }}';  // 현재 로그인한 사용자 ID (서버에서 렌더링된 변수)
+  
+      // 자기 자신을 삭제하려는 경우 처리
+      if (memberId === currentUserId) {
+          alert('자기 자신은 삭제할 수 없습니다.');
+          return;  // 자기 자신 삭제 시 요청을 보내지 않음
+      }
+    
       // 삭제 확인 메시지 추가 (옵션)
       if (!confirm('정말 이 멤버를 삭제하시겠습니까?')) {
-        return;  // 사용자가 취소 버튼을 클릭하면 요청을 보내지 않음
+          return;  // 사용자가 취소 버튼을 클릭하면 요청을 보내지 않음
       }
     
       // 삭제 요청 보내기
       $.ajax({
-        url: '/family1/delete_member/' + memberId + '/',
-        type: 'POST',
-        data: {
-          'csrfmiddlewaretoken': '{{ csrf_token }}'
-        },
-        success: function(response) {
-          alert('멤버가 삭제되었습니다.');
-          location.reload();  // 삭제 후 페이지 새로 고침
-        },
-        error: function(xhr, errmsg, err) {
-          console.log('memberId:', memberId);
-          console.log('XHR response:', xhr.responseText);  // 서버에서 받은 전체 응답 내용 출력
-          alert('삭제에 실패했습니다. 오류: ' + errmsg);  // 메시지 출력
-        }
+          url: '/family1/delete_member/' + memberId + '/',
+          type: 'POST',
+          data: {
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(response) {
+              alert('멤버가 삭제되었습니다.');
+              location.reload();  // 삭제 후 페이지 새로 고침
+          },
+          error: function(xhr, errmsg, err) {
+              console.log('memberId:', memberId);
+              console.log('XHR response:', xhr.responseText);  // 서버에서 받은 전체 응답 내용 출력
+              alert('삭제에 실패했습니다. 오류: ' + errmsg);  // 메시지 출력
+          }
       });
-    });
+  });
     
 
     // 맴버 추가
@@ -253,7 +237,6 @@
       const memberId = $('#add_input').val().trim();  // 입력된 ID 가져오기
   
       if (!memberId) {
-        alert("아이디를 입력하세요.");
         return;
       }
       // CSRF 토큰 가져오기
@@ -430,7 +413,7 @@
               {% if joined_group_members %}
               {% for member in joined_group_members%}
               <div class="small_list_1">
-                <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
+                <div class="small_img"><img src="{{ member.img }}" alt="" /></div>
                 <div class="summ">
                   <div class="small_name">{{member.member.name}}</div>
                   <div class="small_bir">{{member.member.birthday}}</div>
@@ -442,10 +425,10 @@
               
               
             </div>
-            <div id="add_Btn_input">
+            <div id="add_Btn_input" style="display: none;">
               <input type="text" name = "add_member1" id="add_input" placeholder="  추가할 맴버의 아이디를 검색하세요.">
             </div>
-            <div id="add_Btn_toggle">
+            <div id="add_Btn_toggle" style="display: none;">
               <button type="button" id="add_Bton">맴버추가하기</button>
             </div>
             <div class="small_toggle" id='small_toggle_id1'>
@@ -460,7 +443,7 @@
             {% if created_group_members %}
               {% for member in created_group_members %}
               <div class="small_list_2">
-                <div class="small_img"><img src="{% static 'images/family1/default_profile.png'%}" alt="" /></div>
+                <div class="small_img"><img src="{{ member.img }}" alt="" /></div>
                 <div class="summ">
                   <div class="small_name">{{member.member.name}}</div>
                   <div class="small_bir">{{member.member.birthday}}</div>

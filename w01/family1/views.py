@@ -54,6 +54,11 @@ def delete_member(request, member_id):
         print("No session ID found.")  # 세션 ID 로그
         return JsonResponse({'error': '로그인이 필요합니다.'}, status=400)
 
+    # 삭제하려는 멤버와 로그인한 멤버가 동일한지 확인
+    if str(id) == str(member_id):
+        # 자기 자신을 삭제하려 할 때
+        return JsonResponse({'error': '자기 자신은 삭제할 수 없습니다.'}, status=400)
+    
     try:
         # 삭제할 멤버 찾기
         member = get_object_or_404(Member, id=member_id)
@@ -144,6 +149,22 @@ def fam(request):
     # if not created_group_members1:joined_group = None
     # user.save()
 
+    created_group_members_with_img = []
+    for member in created_group_members:
+        img_obj = Img.objects.filter(id=member.member.id).first()
+        created_group_members_with_img.append({
+            'member': member.member,
+            'img': img_obj.img.url if img_obj and img_obj.img else '../static/images/calendar1/default_profile.png'
+        })
+    joined_group_members_with_img = []
+    for member in joined_group_members:
+        img_obj = Img.objects.filter(id=member.member.id).first()
+        joined_group_members_with_img.append({
+            'member': member.member,
+            'img': img_obj.img.url if img_obj and img_obj.img else '../static/images/calendar1/default_profile.png'
+        })
+
+
     # 그룹 존재 여부 확인
     has_group = bool(created_group or joined_group)
     qb = Img.objects.filter(id=id).first()
@@ -155,8 +176,8 @@ def fam(request):
         'joined_group': joined_group,
         'created_group_name': created_group_name,
         'joined_group_name': joined_group_name,
-        'joined_group_members': joined_group_members,
-        'created_group_members': created_group_members,
+        'joined_group_members': joined_group_members_with_img,
+        'created_group_members': created_group_members_with_img,
         "qb":qb,
     }
 
