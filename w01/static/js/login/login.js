@@ -75,3 +75,24 @@ document.addEventListener("DOMContentLoaded", function() {
       loginErrorMsgElement.style.display = 'block';  // 에러 메시지 보이게 설정
   }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+  const idInput = document.getElementById("id_input");
+  const rememberCheckbox = document.getElementById("remember");
+
+  // 페이지 로드 시, localStorage에 저장된 아이디가 있으면 불러옴
+  if (localStorage.getItem("rememberedId")) {
+    idInput.value = localStorage.getItem("rememberedId");
+    rememberCheckbox.checked = true;
+  }
+
+  // 로그인 버튼 클릭 시 체크박스 상태에 따라 처리
+  const loginButton = document.getElementById("login_button");
+  loginButton.addEventListener("click", () => {
+    if (rememberCheckbox.checked) {
+      localStorage.setItem("rememberedId", idInput.value); // 아이디 저장
+    } else {
+      localStorage.removeItem("rememberedId"); // 아이디 삭제
+    }
+  });
+});
